@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  open_webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: ${CONTAINER_NAME}
+    ports:
+      - "127.0.0.1:3000:8080"
+    networks:
+      pasta:
+        aliases:
+          - -T
+          - 11434
+    extra_hosts:
+      ollama.local: 127.0.0.1
+    environment:
+      OLLAMA_BASE_URL: http://ollama.local:11434
+      ANONYMIZED_TELEMETRY: 'False'
+      WEBUI_AUTH: 'false'
+    volumes:
+      - open-webui:/app/backend/data
+    labels:
+      io.containers.autoupdate: registry
+    restart: always
+
+
+
+networks:
+  pasta:
+    driver: bridge
+
+volumes:
+  open-webui:

@@ -1,0 +1,36 @@
+cursor #eddbce
+cursor_text_color #5b3627
+selection_foreground #5b3627
+selection_background #fbf6f3
+
+url_color #f2f3e2
+visual_bell_color #ecddb5
+bell_border_color #ccb3a4
+
+active_border_color #fbf6f2
+inactive_border_color #fbf6f3
+
+foreground #e39c6b
+background #492b1f
+
+active_tab_foreground #5b3627
+active_tab_background #da9e74
+inactive_tab_foreground #d19f7d
+inactive_tab_background #6d412f
+
+color0 #bea997
+color8 #aa8f78
+color1 #f2f3e2
+color9 #f4f5e0
+color2 #ecddb5
+color10 #ece6b5
+color3 #ccb3a4
+color11 #decec4
+color4 #fbf6f3
+color12 #ffffff
+color5 #ebe3dc
+color13 #ebe5dc
+color6 #ddd8d1
+color14 #e1d9cd
+color7 #91adc9
+color15 #b3c6da
