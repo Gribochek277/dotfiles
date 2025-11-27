@@ -1,2 +1,4 @@
-# Agent runtime data
-.pi/
+*
+!commits/
+!commits/**
+!README.md

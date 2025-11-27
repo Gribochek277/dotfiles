@@ -1,0 +1,13 @@
+repository: serhii/dotfiles
+commit: 4669485e93ab7f4e539b3622eeae3398433efd6b
+date: 2025-11-27T02:55:44+02:00
+author: Gribochek277 <kpbillia219@gmail.com>
+branches: main
+
+message:
+init
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
