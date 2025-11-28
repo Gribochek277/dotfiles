@@ -1,0 +1,13 @@
+repository: serhii/dotfiles
+commit: ce2acf35aee35f3b6c27448820dd6a4adae5c084
+date: 2025-11-28T02:22:14+02:00
+author: Gribochek277 <kpbillia219@gmail.com>
+branches: main
+
+message:
+added required lsp for typescript
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
