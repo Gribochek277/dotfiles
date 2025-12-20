@@ -38,6 +38,7 @@ return {
           "typescript",
           "markdown",
           "markdown_inline",
+          "python",
     },
       sync_install = false,
       highlight = { enable = true },
@@ -66,7 +67,7 @@ return {
         "typescript-language-server",
         "json-lsp",
         "rust-analyzer",
-
+        "basedpyright",
         -- !
         "roslyn",
         "rzls",

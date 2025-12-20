@@ -1,8 +1,19 @@
 require("nvchad.configs.lspconfig").defaults()
 
-local servers = { "html", "cssls", "vtsls" }
+local servers = { "html", "cssls", "vtsls", "basedpyright", "roslyn" }
 vim.lsp.enable(servers)
 vim.lsp.config("roslyn", {})
+vim.lsp.config("basedpyright", 
+{
+  basedpyright = {
+    analysis = {
+      autoSearchPaths = true,
+      diagnosticMode = "openFilesOnly",
+      useLibraryCodeForTypes = true
+    }
+  }
+}
+)
 
 vim.diagnostic.config(
   {
