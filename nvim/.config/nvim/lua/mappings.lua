@@ -19,7 +19,12 @@ map("n", "<C-j>", "<C-w>j", { desc = "switch window down" })
 map("n", "<C-k>", "<C-w>k", { desc = "switch window up" })
 
 map("n", "<Esc>", "<cmd>noh<CR>", { desc = "general clear highlights" })
-
+-- place this in one of your configuration file(s)
+local hop = require('hop')
+local directions = require('hop.hint').HintDirection
+vim.keymap.set('', 'f', function()
+  hop.hint_char2({ current_line_only = false })
+end, {remap=true})
 -- tabufline
 if require("nvconfig").ui.tabufline.enabled then
   map("n", "<leader>bn", "<cmd>enew<CR>", { desc = "[B]uffer [N]ew" })
@@ -90,7 +95,7 @@ wk.add({
   { "<leader>cg", group = "[G]oto" },
 
   -- UI
-  { "<leader>u",  group = "[F]ile" },
+  { "<leader>u",  group = "[U]i" },
   { "<leader>ut", function() require("nvchad.themes").open() end,                                   desc = "Telescope Nvchad [T]hemes" },
   { "<leader>un", "<cmd>set nu!<CR>",                                                               desc = "Toggle Line [N]umber" },
   { "<leader>ur", "<cmd>set rnu!<CR>",                                                              desc = "Toggle [R]elative Number" },

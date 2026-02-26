@@ -1,42 +1,48 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DEVICE_NAME="$1" # например: tpps/2-elan-trackpoint
-HYPRLAND_CONFIG="$HOME/.config/hypr/hyprland.conf"
+INPUT_CONF="$HOME/.config/hypr/config/input.conf"
 
-# Находим номер строки, где встречается точная строка "name = $DEVICE_NAME"
-LINE=$(awk -v dev="$DEVICE_NAME" '
-  { if (index($0, "name = " dev)) { print NR; exit } }
-' "$HYPRLAND_CONFIG" || true)
+# Function to toggle a single device in config
+toggle_device() {
+    local device_name="$1"
+    local new_status
 
-if [ -z "$LINE" ]; then
-  notify-send "Hyprland" "Устройство не найдено: $DEVICE_NAME"
-  echo "Device not found: $DEVICE_NAME" >&2
-  exit 1
-fi
+    # Find the line with device name and read current enabled status
+    local current=$(grep -A 1 "name = $device_name" "$INPUT_CONF" | grep enabled | awk '{print $3}' || echo "1")
 
-# Читаем текущее значение enabled (строка ниже найденной)
-ENABLED_LINE=$((LINE + 1))
-CURRENT=$(sed -n "${ENABLED_LINE}p" "$HYPRLAND_CONFIG" | awk '{print $3}' || true)
+    # Toggle: 1 -> 0, 0 -> 1
+    if [ "$current" = "1" ]; then
+        new_status=0
+    else
+        new_status=1
+    fi
 
-if [ -z "$CURRENT" ]; then
-  notify-send "Hyprland" "Не удалось прочитать enabled для $DEVICE_NAME"
-  echo "Failed to read enabled" >&2
-  exit 1
-fi
+    # Replace the enabled value using Python with multiline match
+    python3 << EOF
+import re
 
-# Переключаем
-if [ "$CURRENT" -eq 1 ]; then
-  NEW=0
-  MSG="Отключено: $DEVICE_NAME"
-else
-  NEW=1
-  MSG="Включено: $DEVICE_NAME"
-fi
+with open('$INPUT_CONF', 'r') as f:
+    lines = f.readlines()
 
-# Заменяем конкретную линию (без проблем с символами в имени)
-sed -i "${ENABLED_LINE}s/enabled = .*/enabled = $NEW/" "$HYPRLAND_CONFIG"
+device_pattern = re.escape('$device_name')
+# Match: device block for this device
+pattern = re.compile(r'(device\s*\{\s*\n\s*' + device_pattern + r'\s*\n\s*enabled\s*=\s*[0-9]+\s*\n\s*\})')
 
-# Перезагружаем Hyprland и показываем popup
+replacement = r'\1enabled = $new_status'
+content = ''.join(lines)
+content = pattern.sub(replacement, content)
+
+with open('$INPUT_CONF', 'w') as f:
+    f.write(content)
+EOF
+
+    notify-send "Hyprland" "Device $device_name: $([ "$new_status" = "1" ] && echo 'Enabled' || echo 'Disabled')"
+}
+
+# Toggle both devices
+toggle_device "at-translated-set-2-keyboard"
+toggle_device "tpps/2-elan-trackpoint"
+
+# Reload Hyprland
 hyprctl reload
-notify-send "Hyprland" "$MSG"
