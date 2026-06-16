@@ -1,10 +1,8 @@
--- lua/configs/conform.lua
-
-local opts = {
+return {
   async = true,
   formatters_by_ft = {
     cs = { "csharpier_formatter" },
-    csproj = { "csharpier_formatter" }
+    csproj = { "csharpier_formatter" },
   },
   formatters = {
     csharpier_formatter = {
@@ -16,11 +14,8 @@ local opts = {
       to_stdin = true,
     },
   },
-  -- format_on_save = {
-  --   -- These options will be passed to conform.format()
-  --   timeout_ms = 500,
-  --   lsp_fallback = true,
-  -- },
+  format_on_save = {
+    timeout_ms = 500,
+    lsp_fallback = true,
+  },
 }
-
-require("conform").setup(opts)

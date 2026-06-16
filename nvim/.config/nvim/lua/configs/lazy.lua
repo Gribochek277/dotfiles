@@ -1,6 +1,6 @@
 return {
   defaults = { lazy = true },
-  install = { colorscheme = { "nvchad" } },
+  install = { colorscheme = { "flow" } },
 
   ui = {
     icons = {
@@ -45,4 +45,3 @@ return {
     },
   },
 }
-

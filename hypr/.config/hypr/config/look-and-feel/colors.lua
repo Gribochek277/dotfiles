@@ -1,0 +1,3 @@
+-- Color scheme configuration
+
+-- Modify these values to change the appearance of your Hyprland session

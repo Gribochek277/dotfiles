@@ -1,51 +1,32 @@
 return {
   {
     "stevearc/conform.nvim",
-    -- event = 'BufWritePre', -- uncomment for format on save
+    event = "BufWritePre",
     opts = require "configs.conform",
   },
 
-  -- These are some examples, uncomment them if you want to see them work!
   {
-    "neovim/nvim-lspconfig",
-    config = function()
-      require "configs.lspconfig"
-    end,
+    "folke/snacks.nvim",
+    priority = 1000,
+    opts = {
+      terminal = { enabled = true },
+    },
   },
 
-  -- test new blink
-  -- { import = "nvchad.blink.lazyspec" },
-
-  -- {
-  -- 	"nvim-treesitter/nvim-treesitter",
-  -- 	opts = {
-  -- 		ensure_installed = {
-  -- 			"vim", "lua", "vimdoc",
-  --      "html", "css"
-  -- 		},
-  -- 	},
-  -- },
- {
-  "nvim-treesitter/nvim-treesitter",
-  opts = {
-    ensure_installed = {
-          "lua",
-          "vim",
-          "vimdoc",
-          "javascript",
-          "html",
-          "c_sharp",
-          "typescript",
-          "markdown",
-          "markdown_inline",
-          "python",
-    },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    opts = {
+      ensure_installed = {
+        "lua", "vim", "vimdoc", "javascript", "html",
+        "c_sharp", "typescript", "markdown", "markdown_inline", "python",
+      },
       sync_install = false,
       highlight = { enable = true },
       indent = { enable = true },
+    },
   },
- }, 
-   {
+
+  {
     "williamboman/mason.nvim",
     opts = {
       registries = {
@@ -54,39 +35,22 @@ return {
       },
       ensure_installed = {
         "lua-language-server",
-        
-        "xmlformatter",
-        "csharpier",
-        "prettier",
-      
-        "stylua",
-        "bicep-lsp",
-        "html-lsp",
-        "css-lsp",
-        "eslint-lsp",
-        "typescript-language-server",
-        "json-lsp",
-        "rust-analyzer",
-        "basedpyright",
-        -- !
-        "roslyn",
-        "rzls",
-        -- "csharp-language-server",
-        -- "omnisharp",
+        "xmlformatter", "csharpier", "prettier",
+        "stylua", "bicep-lsp", "html-lsp", "css-lsp",
+        "eslint-lsp", "typescript-language-server", "json-lsp",
+        "rust-analyzer", "basedpyright",
+        "roslyn", "rzls",
       },
     },
   },
+
   {
     "seblyng/roslyn.nvim",
-    ---@module 'roslyn.config'
-    ---@type RoslynNvimConfig
     ft = { "cs", "razor" },
-    opts = {
-      -- your configuration comes here; leave empty for default settings
-    },
-},
-{
-    -- Debug Framework
+    opts = {},
+  },
+
+  {
     "mfussenegger/nvim-dap",
     dependencies = {
       "rcarriga/nvim-dap-ui",
@@ -96,9 +60,10 @@ return {
     end,
     event = "VeryLazy",
   },
+
   { "nvim-neotest/nvim-nio" },
+
   {
-    -- UI for debugging
     "rcarriga/nvim-dap-ui",
     dependencies = {
       "mfussenegger/nvim-dap",
@@ -107,58 +72,93 @@ return {
       require "configs.nvim-dap-ui"
     end,
   },
+
   {
     "nvim-neotest/neotest",
-    requires = {
-      {
-        "Issafalcon/neotest-dotnet",
-      }
-    },
     dependencies = {
       "nvim-neotest/nvim-nio",
       "nvim-lua/plenary.nvim",
       "antoinemadec/FixCursorHold.nvim",
-      "nvim-treesitter/nvim-treesitter"
-    }
+      "nvim-treesitter/nvim-treesitter",
+    },
   },
+
   {
     "Issafalcon/neotest-dotnet",
-    lazy = false,
     dependencies = {
-      "nvim-neotest/neotest"
-    }
+      "nvim-neotest/neotest",
+    },
   },
- {
-    'ramboe/ramboe-dotnet-utils',
-    dependencies = { 'mfussenegger/nvim-dap' }
+
+  {
+    "ramboe/ramboe-dotnet-utils",
+    dependencies = { "mfussenegger/nvim-dap" },
   },
--- .config/nvim/lua/plugins/init.lua
--- ...
-{
+
+  {
     "rachartier/tiny-inline-diagnostic.nvim",
-    event = "VeryLazy", -- Or `LspAttach`
-    priority = 1000,    -- needs to be loaded in first
+    event = "VeryLazy",
+    priority = 1000,
     config = function()
       require('tiny-inline-diagnostic').setup()
-      vim.diagnostic.config({ virtual_text = false }) -- Only if needed in your configuration, if you already have native LSP diagnostics
-    end
-  },
-{
-    "stevearc/conform.nvim",
-    -- event = 'BufWritePre', -- uncomment for format on save
-    config = function()
-      require "configs.conform"
+      vim.diagnostic.config({ virtual_text = false })
     end,
-  },{ 'nvim-mini/mini.icons', version = '*' },
-{
-  "folke/which-key.nvim",
-  event = "VeryLazy",
-  opts = {
-    -- your configuration comes here
-    -- or leave it empty to use the default settings
-    -- refer to the configuration section below
   },
-  keys = {
+
+  { "nvim-mini/mini.icons", version = "*" },
+
+  {
+    "folke/which-key.nvim",
+    event = "VeryLazy",
+    opts = {},
+  },
+
+  {
+    "nvim-tree/nvim-tree.lua",
+    cmd = { "NvimTreeToggle", "NvimTreeFocus" },
+    opts = {
+      on_attach = function(bufnr)
+        local api = require("nvim-tree.api")
+        api.config.mappings.default_on_attach(bufnr)
+
+        local bufopts = { buffer = bufnr, nowait = true }
+        vim.keymap.set("n", "<C-j>", "<C-w>j", bufopts)
+        vim.keymap.set("n", "<C-k>", "<C-w>k", bufopts)
+        vim.keymap.set("n", "<C-l>", "<C-w>l", bufopts)
+      end,
+    },
+  },
+
+  {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    opts = {},
+  },
+
+  {
+    "lukas-reineke/indent-blankline.nvim",
+    main = "ibl",
+    opts = {},
+  },
+
+  {
+    "lewis6991/gitsigns.nvim",
+    opts = {},
+  },
+
+  {
+    "rafamadriz/friendly-snippets",
+  },
+
+  {
+    "nvim-lualine/lualine.nvim",
+    event = "VeryLazy",
+    opts = {
+      options = {
+        theme = "auto",
+        component_separators = { left = "", right = "" },
+        section_separators = { left = "", right = "" },
       },
-}
+    },
+  },
 }
