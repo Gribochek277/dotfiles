@@ -1,0 +1,18 @@
+repository: serhii/dotfiles
+commit: 6229a1c2fd76a3e236d82c584b79c1d1b35cfbb9
+date: 2026-07-29T17:55:15+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+fix(waybar): use TLP modes for power profile switching
+- Replace sudo tee with pkexec tlp (performance/balanced/power-saver)
+- Uses TLP built-in profiles instead of raw platform_profile writes
+- Script reads platform_profile + EPP to determine current mode
+- power-saver: green, balanced: default, performance: amber
+- CPU freq now responds to profile changes (verified 3.2GHz to 806MHz)
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
