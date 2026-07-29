@@ -1,0 +1,28 @@
+@import "/home/serhii/.config/waybar/theme.css";
+
+window {
+    background-color: @background;
+    border: 1px solid alpha(@foreground, 0.3);
+    border-radius: 4px;
+    font-family: 'JetBrainsMonoNerdFontMono';
+    font-size: 12px;
+    color: @foreground;
+}
+
+#input {
+    padding: 6px 12px;
+    border: none;
+    border-bottom: 1px solid alpha(@foreground, 0.2);
+    background: transparent;
+    color: @foreground;
+}
+
+#entry {
+    padding: 6px 16px;
+    margin: 0 4px;
+}
+
+#entry:selected {
+    background-color: alpha(@foreground, 0.15);
+    border-radius: 2px;
+}

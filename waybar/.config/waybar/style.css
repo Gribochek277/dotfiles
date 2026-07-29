@@ -1,0 +1,170 @@
+@import "theme.css";
+
+*{
+
+
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  font-family: 'JetBrainsMonoNerdFontMono';
+  font-size: 12px;
+}
+window#waybar {
+    background: @background;
+    border-bottom: 1px solid @foreground;
+
+    color: @foreground;
+}
+
+.modules-left {
+  margin-left: 8px;
+}
+
+.modules-right {
+  margin-right: 8px;
+}
+
+#workspaces button {
+  all: initial;
+  color: @foreground;
+  padding: 0 6px;
+  margin: 0 1.5px;
+  min-width: 9px;
+}
+
+#workspaces button.active {
+  color: @foreground;
+}
+
+#workspaces button.empty {
+  opacity: 0.5;
+}
+#cpu,
+#pulseaudio,
+#custom-omarchy,
+#custom-screenrecording-indicator,
+#custom-system-update {
+  min-width: 12px;
+  margin: 0 7.5px;
+}
+
+#battery {
+  margin-right: 5px; 
+}
+#tray {
+  margin-right: 16px;
+  margin-left: 6px;
+}
+
+#bluetooth {
+  margin-right: 17px;
+}
+
+#network {
+  margin-right: 13px;
+}
+
+#custom-expand-icon {
+  margin-right: 10px;
+}
+
+tooltip {
+  padding: 2px;
+}
+
+#custom-system-update {
+  font-size: 10px;
+}
+
+#clock {
+  margin-left: 8.75px;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+#custom-screenrecording-indicator {
+  min-width: 12px;
+  margin-left: 8.75px;
+  font-size: 10px;
+}
+
+#custom-screenrecording-indicator.active {
+  color: #a55555;
+}
+
+#custom-llm {
+  margin: 0 7.5px;
+  min-width: 12px;
+  font-size: 12px;
+}
+
+#custom-llm.stopped {
+  color: #555555;
+}
+
+#custom-llm.loading {
+  color: #d4a259;
+}
+
+#custom-llm.idle {
+  color: #73b373;
+}
+
+#custom-llm.prefill {
+  color: #d4a259;
+}
+
+#custom-llm.generating {
+  color: #73a5d4;
+}
+
+#custom-llm_remote {
+  margin: 0 7.5px;
+  min-width: 12px;
+  font-size: 12px;
+}
+
+#custom-llm_remote.remote-online {
+  color: #73b373;
+}
+
+#custom-llm_remote.remote-sleeping {
+  color: #d4a259;
+}
+
+#custom-llm_remote.remote-offline {
+  color: #555555;
+}
+
+#custom-silo {
+  margin-right: -7px;
+  min-width: 12px;
+}
+
+#custom-silo.mounted {
+  color: #73b373;
+}
+
+#custom-silo.unmounted {
+  color: #555555;
+}
+
+#custom-power-profile {
+  margin: 0 7.5px;
+  min-width: 12px;
+  font-size: 12px;
+}
+
+#custom-power-profile.low-power {
+  color: #73b373;
+}
+
+#custom-power-profile.balanced {
+  color: @foreground;
+}
+
+#custom-power-profile.performance {
+  color: #d4a259;
+}

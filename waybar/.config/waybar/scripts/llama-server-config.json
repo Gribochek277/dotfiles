@@ -1,0 +1,8 @@
+{
+  "llamacpp_dir": "/home/serhii/llamacpp",
+  "host": "0.0.0.0",
+  "port": 8080,
+  "log_file": "/tmp/llama-server.log",
+  "pid_file": "/tmp/llama-server.pid",
+  "script_file": "/tmp/llama-server-script"
+}

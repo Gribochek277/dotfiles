@@ -1,0 +1,205 @@
+{
+  "reload_style_on_change": true,
+  "layer": "top",
+  "position": "top",
+  "spacing": 0,
+  "height": 26,
+  "modules-left": [
+    "hyprland/workspaces",
+    "custom/llm",
+    "custom/llm_remote"
+  ],
+  "modules-center": [
+    "clock",
+    "custom/system-update"
+  ],
+  "modules-right": [
+    "group/tray-expander",
+    "hyprland/language",
+    "custom/silo",
+    "pulseaudio",
+    "custom/backlight",
+    "cpu",
+    "custom/power-profile",
+    "battery"
+  ],
+  "hyprland/language": {
+    "format": "{short} {variant}",
+    "on-click": "keyboardswitch.sh"
+  },
+  "hyprland/workspaces": {
+    "on-click": "activate",
+    "format": "{icon}",
+    "format-icons": {
+      "default": "\uea71",
+      "1": "1",
+      "2": "2",
+      "3": "3",
+      "4": "4",
+      "5": "5",
+      "6": "6",
+      "7": "7",
+      "8": "8",
+      "9": "9",
+      "active": "\udb85\udcfb"
+    },
+    "persistent-workspaces": {
+      "1": [],
+      "2": [],
+      "3": [],
+      "4": [],
+      "5": []
+    }
+  },
+  "custom/system-update": {
+    "exec": "/home/serhii/.config/waybar/scripts/system-update.sh module",
+    "return-type": "json",
+    "format": "{}",
+    "on-click": "kitty -e /home/serhii/.config/waybar/scripts/system-update.sh",
+    "interval": 3600,
+    "tooltip": true,
+    "signal": 1
+  },
+  "custom/llm": {
+    "exec": "~/.config/waybar/scripts/llama-server-status.sh",
+    "return-type": "json",
+    "format": "{}",
+    "tooltip": true,
+    "interval": 1,
+    "on-click": "~/.config/waybar/scripts/llama-server-menu.sh"
+  },
+  "custom/llm_remote": {
+    "exec": "~/.config/waybar/scripts/llama-remote-status.sh",
+    "return-type": "json",
+    "format": "{}",
+    "tooltip": true,
+    "interval": 10,
+    "on-click": "xdg-open http://100.110.77.11:8080"
+  },
+  "custom/togglekb": {
+    "format": " \u2328",
+    "tooltip": false,
+    "on-click": "/home/serhii/.config/hypr/scripts/toggle-device.sh at-translated-set-2-keyboard;/home/serhii/.config/hypr/scripts/toggle-device.sh tpps/2-elan-trackpoint"
+  },
+  "cpu": {
+    "interval": 5,
+    "format": "\udb80\udf5b",
+    "on-click": "kitty btop"
+  },
+  "clock": {
+    "format": "{:L%A %H:%M}",
+    "format-alt": "{:L%d %B W%V %Y %H:%M}",
+    "tooltip": false,
+    "on-click-right": "omarchy-launch-floating-terminal-with-presentation omarchy-tz-select"
+  },
+  "custom/power-profile": {
+    "exec": "~/.config/waybar/scripts/power-profile.sh",
+    "return-type": "json",
+    "format": "{}",
+    "tooltip": true,
+    "interval": 15,
+    "on-click": "~/.config/waybar/scripts/power-profile-menu.sh",
+    "signal": 2
+  },
+  "battery": {
+    "format": "{icon} {capacity}%",
+    "format-discharging": "{icon} {capacity}%",
+    "format-charging": "{icon} {capacity}%",
+    "format-plugged": "\uf1e6",
+    "format-icons": {
+      "charging": [
+        "\udb82\udc9c",
+        "\udb80\udc86",
+        "\udb80\udc87",
+        "\udb80\udc88",
+        "\udb82\udc9d",
+        "\udb80\udc89",
+        "\udb82\udc9e",
+        "\udb80\udc8a",
+        "\udb80\udc8b",
+        "\udb80\udc85"
+      ],
+      "default": [
+        "\udb80\udc7a",
+        "\udb80\udc7b",
+        "\udb80\udc7c",
+        "\udb80\udc7d",
+        "\udb80\udc7e",
+        "\udb80\udc7f",
+        "\udb80\udc80",
+        "\udb80\udc81",
+        "\udb80\udc82",
+        "\udb80\udc79"
+      ]
+    },
+    "format-full": "\udb80\udc85",
+    "tooltip-format-discharging": "{power:>1.0f}W\u2193 {time}",
+    "tooltip-format-charging": "{power:>1.0f}W\u2191 {time}",
+    "interval": 5,
+    "states": {
+      "warning": 20,
+      "critical": 10
+    }
+  },
+  "custom/backlight": {
+    "exec": "~/.config/waybar/scripts/brightness-control.sh",
+    "return-type": "json",
+    "format": "{}",
+    "tooltip": true,
+    "on-scroll-up": "~/.config/waybar/scripts/brightness-control.sh -o i",
+    "on-scroll-down": "~/.config/waybar/scripts/brightness-control.sh -o d",
+    "interval": 1
+  },
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "\udb81\udf5f {volume}%",
+    "format-icons": {
+      "default": [
+        "\udb81\udd7f",
+        "\udb81\udd80",
+        "\udb81\udd7e"
+      ],
+      "headphone": "\udb80\udecb",
+      "headset": "\udb80\udecb"
+    },
+    "tooltip": true,
+    "tooltip-format": "Device: {desc}",
+    "on-click": "~/.config/waybar/scripts/volume-control.sh -o m",
+    "on-scroll-up": "~/.config/waybar/scripts/volume-control.sh -o i",
+    "on-scroll-down": "~/.config/waybar/scripts/volume-control.sh -o d"
+  },
+  "group/tray-expander": {
+    "orientation": "inherit",
+    "drawer": {
+      "transition-duration": 600,
+      "children-class": "tray-group-item"
+    },
+    "modules": [
+      "custom/expand-icon",
+      "tray"
+    ]
+  },
+  "custom/expand-icon": {
+    "format": "\uf08b",
+    "tooltip": false
+  },
+  "custom/silo": {
+    "exec": "/home/serhii/.config/waybar/scripts/siloctl-module.sh",
+    "return-type": "json",
+    "format": "{}",
+    "tooltip": true,
+    "interval": 2,
+    "on-click": "/home/serhii/.config/waybar/scripts/siloctl-toggle.sh"
+  },
+  "custom/screenrecording-indicator": {
+    "on-click": "omarchy-cmd-screenrecord",
+    "exec": "$OMARCHY_PATH/default/waybar/indicators/screen-recording.sh",
+    "signal": 8,
+    "return-type": "json"
+  },
+  "tray": {
+    "icon-size": 12,
+    "spacing": 17
+  },
+  "include": []
+}

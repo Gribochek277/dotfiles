@@ -1,0 +1,3 @@
+.config/waybar/scripts/__pycache__/
+.config/waybar/.ruff_cache/
+.config/waybar/.opencode/
