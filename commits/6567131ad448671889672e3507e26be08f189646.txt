@@ -1,0 +1,13 @@
+repository: serhii/dotfiles
+commit: 6567131ad448671889672e3507e26be08f189646
+date: 2026-07-29T17:39:43+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(waybar): add power profile switcher module
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
