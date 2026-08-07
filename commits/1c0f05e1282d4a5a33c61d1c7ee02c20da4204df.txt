@@ -1,0 +1,17 @@
+repository: serhii/dotfiles
+commit: 1c0f05e1282d4a5a33c61d1c7ee02c20da4204df
+date: 2026-08-08T02:56:28+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+docs: add AGENTS.md with project structure and conventions
+- Document Stow target layout and per-target conventions
+- Cover hypr, nvim, waybar, kitty, tlp config details
+- Include remotes, push workflow, and useful commands
+- Note WallRizz-generated files and general rules
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
