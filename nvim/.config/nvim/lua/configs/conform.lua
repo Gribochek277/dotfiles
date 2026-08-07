@@ -1,21 +1,18 @@
 return {
-  async = true,
-  formatters_by_ft = {
-    cs = { "csharpier_formatter" },
-    csproj = { "csharpier_formatter" },
+  default_format_opts = {
+    lsp_format = "fallback",
+    timeout_ms = 3000,
   },
-  formatters = {
-    csharpier_formatter = {
-      command = "csharpier",
-      args = {
-        "format",
-        "--write-stdout",
-      },
-      to_stdin = true,
-    },
+  formatters_by_ft = {
+    typescript = { "prettier" },
+    typescriptreact = { "prettier" },
+    javascript = { "prettier" },
+    javascriptreact = { "prettier" },
+    cs = { "dotnet_format" },
+    csproj = { "dotnet_format" },
   },
   format_on_save = {
-    timeout_ms = 500,
-    lsp_fallback = true,
+    timeout_ms = 3000,
+    lsp_format = "fallback",
   },
 }

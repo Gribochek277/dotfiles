@@ -66,6 +66,7 @@
     "format": "{}",
     "tooltip": true,
     "interval": 1,
+    "signal": 30,
     "on-click": "~/.config/waybar/scripts/llama-server-menu.sh"
   },
   "custom/llm_remote": {
@@ -73,7 +74,7 @@
     "return-type": "json",
     "format": "{}",
     "tooltip": true,
-    "interval": 10,
+    "interval": 1,
     "on-click": "xdg-open http://100.110.77.11:8080"
   },
   "custom/togglekb": {
@@ -164,7 +165,7 @@
     },
     "tooltip": true,
     "tooltip-format": "Device: {desc}",
-    "on-click": "~/.config/waybar/scripts/volume-control.sh -o m",
+    "on-click": "ghostty -e wiremix",
     "on-scroll-up": "~/.config/waybar/scripts/volume-control.sh -o i",
     "on-scroll-down": "~/.config/waybar/scripts/volume-control.sh -o d"
   },

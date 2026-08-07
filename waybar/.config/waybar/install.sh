@@ -13,6 +13,7 @@ DEPS=(
 	networkmanager # nmcli
 	pacman-contrib # checkupdates
 	pipewire-pulse
+	tlp-pd # TLP power profiles D-Bus API
 	ttf-0xproto-nerd
 )
 
@@ -35,6 +36,16 @@ main() {
 			fi
 		fi
 	done
+
+	if pacman -Qi tlp-pd > /dev/null; then
+		printf '%bEnabling TLP power profiles service...%b\n' "$BLU" "$RST"
+		if sudo systemctl enable --now tlp-pd.service; then
+			printf '[%b/%b] tlp-pd.service\n' "$GRN" "$RST"
+		else
+			printf '[%bx%b] tlp-pd.service\n' "$RED" "$RST"
+			((errors++))
+		fi
+	fi
 
 	printf '\n%bMaking scripts executable...%b\n' "$BLU" "$RST"
 	chmod -v +x ~/.config/waybar/scripts/*.sh

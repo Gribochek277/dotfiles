@@ -101,11 +101,13 @@ tooltip {
 }
 
 #custom-llm.stopped {
-  color: #555555;
+  color: @foreground;
+  opacity: 0.5;
 }
 
 #custom-llm.loading {
-  color: #d4a259;
+  color: @foreground;
+  opacity: 0.5;
 }
 
 #custom-llm.idle {
@@ -113,7 +115,7 @@ tooltip {
 }
 
 #custom-llm.prefill {
-  color: #d4a259;
+  color: #73a5d4;
 }
 
 #custom-llm.generating {
@@ -126,16 +128,25 @@ tooltip {
   font-size: 12px;
 }
 
-#custom-llm_remote.remote-online {
+#custom-llm_remote.remote-idle {
   color: #73b373;
 }
 
+#custom-llm_remote.remote-prefill {
+  color: #73a5d4;
+}
+
+#custom-llm_remote.remote-generating {
+  color: #73a5d4;
+}
+
 #custom-llm_remote.remote-sleeping {
-  color: #d4a259;
+  color: #73b373;
 }
 
 #custom-llm_remote.remote-offline {
-  color: #555555;
+  color: @foreground;
+  opacity: 0.5;
 }
 
 #custom-silo {

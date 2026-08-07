@@ -1,7 +1,7 @@
 var_mainMod = "ALT"
 var_terminal = "ghostty"
 var_fileManager = "yazi"
-var_menu = "rofi -show drun"
+var_menu = "rofi -show drun -theme ~/.config/rofi/theme.rasi"
 var_border_size = 5
 var_gaps_in = 4
 var_gaps_out = 10

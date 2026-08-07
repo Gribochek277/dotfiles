@@ -1,11 +1,44 @@
-local map = vim.keymap.set
+local keymaps = require("localized_keymaps")
+local map = keymaps.set
 local fzf = require("fzf-lua")
+
+local function format_code()
+  require("conform").format { lsp_format = "fallback" }
+end
+
+local function project_root()
+  local buf = vim.api.nvim_get_current_buf()
+  local path = vim.api.nvim_buf_get_name(buf)
+
+  for _, client in ipairs(vim.lsp.get_clients { bufnr = buf }) do
+    local root = client.config and client.config.root_dir
+    if root and path:find(vim.pesc(root), 1, true) == 1 then
+      return root
+    end
+  end
+
+  return vim.fs.root(buf, { ".git", ".jj", "package.json", "pyproject.toml", "Cargo.toml", "go.mod" })
+    or vim.fn.getcwd()
+end
+
+local function search_project_text()
+  fzf.live_grep({ cwd = project_root() })
+end
+
+keymaps.enable_builtin_layout_maps()
 
 map("n", ";", ":", { desc = "CMD enter command mode" })
 map("i", "jk", "<Esc>", { noremap = true, silent = true })
 map("i", "kj", "<Esc>", { noremap = true, silent = true })
+map("i", "ол", "<Esc>", { noremap = true, silent = true })
+map("i", "ло", "<Esc>", { noremap = true, silent = true })
+map("t", "ол", "<C-\\><C-N>", { noremap = true, silent = true })
+map("t", "ло", "<C-\\><C-N>", { noremap = true, silent = true })
 
 map("n", "<C-p>", fzf.files, {})
+map("n", "<C-f>", search_project_text, { desc = "search project text" })
+map("n", "<C-S-f>", search_project_text, { desc = "search project text" })
+map({ "n", "x" }, "<leader>cf", format_code, { desc = "format code" })
 
 map("i", "<C-b>", "<ESC>^i", { desc = "move beginning of line" })
 map("i", "<C-e>", "<End>", { desc = "move end of line" })
@@ -28,7 +61,7 @@ map("n", "<C-l>", nav("l"), { desc = "switch window right" })
 map("n", "<Esc>", "<cmd>noh<CR>", { desc = "general clear highlights" })
 
 local hop = require('hop')
-vim.keymap.set('', 'f', function()
+map('', 'f', function()
   hop.hint_char2({ current_line_only = false })
 end, { remap = true })
 
@@ -44,6 +77,8 @@ map("n", "<leader>bc", "<cmd>bdelete<CR>", { desc = "Buffer [C]lose" })
 
 map("n", "<leader>/", "gcc", { desc = "toggle comment", remap = true })
 map("v", "<leader>/", "gc", { desc = "toggle comment", remap = true })
+
+map("n", "<leader>cr", vim.lsp.codelens.run, { desc = "[C]ode Lens [R]un" })
 
 map("t", "<C-x>", "<C-\\><C-N>", { desc = "terminal escape terminal mode" })
 
@@ -77,7 +112,9 @@ wk.add({
   { "<leader>fr", function() fzf.oldfiles() end,                                 desc = "[R]ecent [F]iles" },
 
   { "<leader>c",  group = "[C]ode" },
-  { "<leader>cf", function() require("conform").format { lsp_fallback = true } end, desc = "Format" },
+  { "<leader>cf", desc = "Format", mode = { "n", "x" } },
+  { "<leader>cl", "J", desc = "[L]ine join", remap = true, mode = { "x" } },
+  { "<leader>cr", vim.lsp.codelens.run, desc = "[R]un CodeLens" },
   { "<leader>cg", group = "[G]oto" },
 
   { "<leader>u",  group = "[U]i" },
@@ -120,11 +157,10 @@ wk.add({
 
   { "<leader>b",  group = "[B]uffer" },
 
-  { "<leader>o",  group = "[O]penCode" },
-  { "<leader>oa", function() require("opencode").ask() end, desc = "[A]sk", mode = { "n", "x" } },
-  { "<leader>oc", function() require("opencode").send_selection(false) end, desc = "[C]ontext → TUI", mode = { "n", "x" } },
-  { "<leader>oC", function() require("opencode").send_selection(true) end, desc = "[C]ontext + Submit", mode = { "n", "x" } },
-  { "<leader>oe", function() require("opencode").edit() end, desc = "[E]dit", mode = { "n", "x" } },
-  { "<leader>oi", function() require("opencode").implement_function() end, desc = "[I]mplement function", mode = { "n", "x" } },
-  { "<leader>ot", function() require("opencode").toggle() end, desc = "[T]oggle", mode = { "n", "t" } },
+  { "<leader>a",  group = "[A]I" },
+  { "<leader>ai", "<cmd>PiAsk<CR>",          desc = "[A]sk Pi",             mode = { "n" } },
+  { "<leader>ai", ":PiAskSelection<CR>",    desc = "[A]sk Pi (selection)", mode = { "x" } },
+  { "<leader>am", function() require("pi_models").pick() end, desc = "[M]odel picker" },
+  { "<leader>ac", "<cmd>PiCancel<CR>",       desc = "[C]ancel request" },
+  { "<leader>al", "<cmd>PiLog<CR>",          desc = "[L]og" },
 })

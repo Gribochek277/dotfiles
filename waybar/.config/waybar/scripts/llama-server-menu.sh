@@ -74,6 +74,10 @@ notify() {
     notify-send "llama-server" "$1" 2>/dev/null
 }
 
+notify_waybar() {
+    pkill -RTMIN+30 waybar 2>/dev/null
+}
+
 is_running() {
     curl -s --max-time 1 "${BASE_URL}/health" 2>/dev/null | grep -q '"ok"'
 }
@@ -88,6 +92,7 @@ start_script() {
     echo $! > "$PID_FILE"
     echo "$script" > "$SCRIPT_FILE"
     notify "Started $(basename "$script" .sh): PID $!"
+    notify_waybar
 }
 
 stop_server() {
@@ -103,6 +108,7 @@ stop_server() {
         pkill -SIGKILL -x "llama-server" 2>/dev/null
     fi
     notify "Stopped"
+    notify_waybar
 }
 
 switch_model() {

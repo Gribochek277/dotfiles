@@ -13,7 +13,7 @@ hl.config({
             enabled = true,
             passes = 2,
             special = true,
-            xray = true,
+            xray = false,
         },
         dim_strength = 0.0,
     },
@@ -26,7 +26,7 @@ hl.config({
         no_donation_nag = true,
     },
     general = {
-        border_size = 1,
+        border_size = 5,
         gaps_in = 5,
         gaps_out = 5,
         layout = "dwindle",

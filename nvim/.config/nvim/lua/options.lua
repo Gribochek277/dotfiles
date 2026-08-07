@@ -1,6 +1,8 @@
 local opt = vim.opt
 local o = vim.o
 
+o.autoread = true
+
 opt.number = true
 opt.relativenumber = true
 
@@ -10,7 +12,8 @@ opt.softtabstop = 2
 opt.expandtab = true
 opt.smartindent = true
 
-opt.wrap = false
+opt.wrap = true
+opt.linebreak = true
 
 opt.ignorecase = true
 opt.smartcase = true
@@ -44,5 +47,7 @@ opt.encoding = "utf-8"
 opt.fileencoding = "utf-8"
 
 opt.foldmethod = "expr"
-opt.foldexpr = "nvim_treesitter#foldexpr()"
-opt.foldenable = true
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+opt.foldenable = false
+opt.foldlevel = 99
+opt.foldlevelstart = 99

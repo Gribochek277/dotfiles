@@ -15,6 +15,9 @@ return {
 
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "master",
+    lazy = false,
+    build = ":TSUpdate",
     opts = {
       ensure_installed = {
         "lua", "vim", "vimdoc", "javascript", "html",
@@ -28,6 +31,7 @@ return {
 
   {
     "williamboman/mason.nvim",
+    lazy = false,
     opts = {
       registries = {
         "github:mason-org/mason-registry",
@@ -39,14 +43,14 @@ return {
         "stylua", "bicep-lsp", "html-lsp", "css-lsp",
         "eslint-lsp", "typescript-language-server", "json-lsp",
         "rust-analyzer", "basedpyright",
-        "roslyn", "rzls",
+        "roslyn",
       },
     },
   },
 
   {
     "seblyng/roslyn.nvim",
-    ft = { "cs", "razor" },
+    ft = { "cs", "razor", "cshtml" },
     opts = {},
   },
 
@@ -100,7 +104,20 @@ return {
     event = "VeryLazy",
     priority = 1000,
     config = function()
-      require('tiny-inline-diagnostic').setup()
+      require("tiny-inline-diagnostic").setup({
+        signs = {
+          left = "",
+          right = "",
+          diag = "●",
+          arrow = "    ",
+          up_arrow = "    ",
+          vertical = " │",
+          vertical_end = " └",
+        },
+        blend = {
+          factor = 0.22,
+        },
+      })
       vim.diagnostic.config({ virtual_text = false })
     end,
   },
@@ -117,14 +134,19 @@ return {
     "nvim-tree/nvim-tree.lua",
     cmd = { "NvimTreeToggle", "NvimTreeFocus" },
     opts = {
+      view = {
+        width = 48,
+      },
       on_attach = function(bufnr)
+        vim.wo.wrap = true
+        local map = require("localized_keymaps").set
         local api = require("nvim-tree.api")
         api.config.mappings.default_on_attach(bufnr)
 
         local bufopts = { buffer = bufnr, nowait = true }
-        vim.keymap.set("n", "<C-j>", "<C-w>j", bufopts)
-        vim.keymap.set("n", "<C-k>", "<C-w>k", bufopts)
-        vim.keymap.set("n", "<C-l>", "<C-w>l", bufopts)
+        map("n", "<C-j>", "<C-w>j", bufopts)
+        map("n", "<C-k>", "<C-w>k", bufopts)
+        map("n", "<C-l>", "<C-w>l", bufopts)
       end,
     },
   },
@@ -158,6 +180,16 @@ return {
         theme = "auto",
         component_separators = { left = "", right = "" },
         section_separators = { left = "", right = "" },
+      },
+      sections = {
+        lualine_x = {
+          function()
+            return require("pi_models").label()
+          end,
+          "encoding",
+          "fileformat",
+          "filetype",
+        },
       },
     },
   },
