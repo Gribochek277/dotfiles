@@ -1,0 +1,17 @@
+repository: serhii/dotfiles
+commit: a6e94367467a685fce315a8e49c8a7be4413914a
+date: 2026-08-08T02:52:59+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+chore: add README, gitea remote, and dual-push setup
+- Add README.md explaining GNU Stow dotfiles management
+- Add gitea remote (http://100.110.77.11/serhii/dotfiles.git)
+- Add git alias 'pushboth' for pushing to both origins at once
+- Stage all pending changes across hypr, nvim, waybar, kitty, and tlp
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
