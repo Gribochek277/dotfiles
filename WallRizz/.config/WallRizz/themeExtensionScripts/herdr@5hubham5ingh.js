@@ -10,9 +10,13 @@
    - setTheme() splices that block into ~/.config/herdr/config.toml, keeping
      every other setting untouched, then runs `herdr server reload-config`
      so the change applies to a running session.
-   - BACKGROUND IS NEVER REPAINTED: panel_bg / surface0 / surface1 /
-     surface_dim / overlay0 / overlay1 are left unset, so herdr keeps the
-     base theme's backgrounds (rose-pine by default) exactly as they were.
+   - TABS FOLLOW THE ACCENT HUE: the base theme's surfaces (rose-pine by
+     default) are a fixed dark blue-grey, so inactive tabs / the tab bar
+     never changed color. Instead of leaving them unset, panel_bg /
+     surface0 / surface1 / surface_dim / overlay0 / overlay1 are repainted
+     with dark (or light, in light mode) tinted versions of the accent —
+     same hue family as the wallpaper, same luminance as the base theme, so
+     tabs stay dark but pick up the overall accent.
    - Light mode: the base theme name is switched to its light sibling
      (rose-pine -> rose-pine-dawn, etc.) so dark text stays readable.
 
@@ -136,14 +140,46 @@ function hueTarget(color, targetHue) {
   return color.clone().spin(d);
 }
 
+// Surface family derived from the accent's hue (herdr's tab-bar chrome).
+// Keeps the base theme's luminance — tabs stay dark in dark mode, light in
+// light mode — but swaps the base theme's neutral blue-grey for a subtle tint
+// of the wallpaper accent. Grayscale accents fall back to neutral grays.
+function deriveSurfaces(accent, isDark) {
+  const hsv = accent.toHsv();
+  const colorful = hsv.s > 0.06;
+  const hue = colorful ? hsv.h : 0;
+  const sat = colorful ? 1 : 0;
+  const mk = (s, v) => new Color({ h: hue, s: s * sat, v }).toHexString();
+  if (isDark) {
+    // Luminance matched to rose-pine's dark surfaces (panel_bg #191724 etc.).
+    return {
+      panel_bg: mk(0.32, 0.14),
+      surface_dim: mk(0.32, 0.13),
+      surface0: mk(0.38, 0.18),
+      surface1: mk(0.42, 0.23),
+      overlay0: mk(0.18, 0.52),
+      overlay1: mk(0.20, 0.66),
+    };
+  }
+  // Luminance matched to rose-pine-dawn's light surfaces.
+  return {
+    panel_bg: mk(0.10, 0.97),
+    surface_dim: mk(0.10, 0.96),
+    surface0: mk(0.12, 0.95),
+    surface1: mk(0.08, 0.99),
+    overlay0: mk(0.14, 0.64),
+    overlay1: mk(0.16, 0.56),
+  };
+}
+
 function generateTheme(colorCodes, isDark) {
   const palette = colorCodes.map((c) => Color(c));
 
   // Virtual background for contrast math (never written to config).
-  // Fixed to the actual herdr base backgrounds: rose-pine panel_bg for dark,
-  // rose-pine-dawn panel_bg for light. This keeps colors readable even when
-  // the wallpaper palette is all-dark or all-light.
-  const virtualBg = isDark ? Color("#191724") : Color("#faf4ed");
+  // Approximates the accent-tinted panel_bg generated below (dark v~0.14 /
+  // light v~0.97), which sits close to rose-pine's own panel_bg. This keeps
+  // colors readable even when the wallpaper palette is all-dark or all-light.
+  const virtualBg = isDark ? Color("#242424") : Color("#f7f7f7");
 
   const sorted = palette.slice().sort((a, b) => a.getBrightness() - b.getBrightness());
 
@@ -192,10 +228,17 @@ function generateTheme(colorCodes, isDark) {
   const teal = mk(175);
   const peach = mk(25);
 
+  const surfaces = deriveSurfaces(accent, isDark);
   const h = (c) => c.toHexString();
   const lines = [
     "[theme.custom]",
     'accent = "' + h(accent) + '"',
+    'panel_bg = "' + surfaces.panel_bg + '"',
+    'surface0 = "' + surfaces.surface0 + '"',
+    'surface1 = "' + surfaces.surface1 + '"',
+    'surface_dim = "' + surfaces.surface_dim + '"',
+    'overlay0 = "' + surfaces.overlay0 + '"',
+    'overlay1 = "' + surfaces.overlay1 + '"',
     'text = "' + h(text) + '"',
     'subtext0 = "' + h(subtext0) + '"',
     'mauve = "' + h(mauve) + '"',
