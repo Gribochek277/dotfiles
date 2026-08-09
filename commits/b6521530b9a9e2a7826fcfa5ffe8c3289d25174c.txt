@@ -1,0 +1,18 @@
+repository: serhii/dotfiles
+commit: b6521530b9a9e2a7826fcfa5ffe8c3289d25174c
+date: 2026-08-09T23:21:57+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+fix(WallRizz): tint herdr tab surfaces with wallpaper accent
+herdr tabs were always dark blue-grey because theme.custom left
+panel_bg/surface0/surface1/surface_dim/overlay0/overlay1 unset, falling
+back to rose-pine's fixed surfaces. Derive those tokens from the accent
+hue instead: same luminance as the base theme (tabs stay dark, light in
+light mode), hue/saturation from the wallpaper accent.
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
