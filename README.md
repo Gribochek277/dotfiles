@@ -41,7 +41,26 @@ Each top-level directory is a Stow target that symlinks into `~/.config/`:
 | `nvim/` | Neovim configuration (Lua, lazy.nvim) |
 | `waybar/` | Waybar status bar |
 | `kitty/` | Kitty terminal emulator |
+| `WallRizz/` | WallRizz wallpaper & system theme manager |
 | `tlp/` | TLP power management |
+
+## WallRizz (wallpaper & system theme manager)
+
+WallRizz generates themes for Hyprland, kitty, waybar, etc. from the selected wallpaper.
+Its config is tracked here under `WallRizz/` → `~/.config/WallRizz/`.
+
+Install the binary (from the [WallRizz README](https://github.com/5hubham5ingh/WallRizz)):
+
+```bash
+sudo curl -sL $(curl -s https://api.github.com/repos/5hubham5ingh/WallRizz/releases/latest | grep -Po '"browser_download_url": "\K[^"]+' | grep WallRizz) | tar -xz && sudo mv WallRizz /usr/bin/
+```
+
+Then deploy the config and pick a wallpaper:
+
+```bash
+stow WallRizz
+WallRizz -d ~/Pictures/Wallpapers
+```
 
 ## Push to Both Remotes
 

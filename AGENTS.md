@@ -14,6 +14,7 @@ Personal dotfiles managed by [GNU Stow](https://www.gnu.org/software/stow/). Eac
 ├── nvim/          → ~/.config/nvim/       (Neovim Lua config, lazy.nvim)
 ├── waybar/        → ~/.config/waybar/     (Waybar status bar)
 ├── kitty/         → ~/.config/kitty/      (Kitty terminal)
+├── WallRizz/      → ~/.config/WallRizz/   (WallRizz wallpaper & theme manager)
 ├── tlp/           → ~/etc/tlp.d/          (TLP power profiles)
 ├── README.md
 ├── AGENTS.md
@@ -72,6 +73,15 @@ Push to both with `git pushboth` (git alias → `git push --all origin && git pu
 - **Themes:** `Cherry Midnight.conf`, `Tokyo Night.conf`, `current-theme.conf` (active symlink or copy)
 - **Font:** JetBrainsMono Nerd Font + Symbols Nerd Font for U+E000-U+F8FF
 - **Config format:** Kitty native (line-based, colon-prefixed comments for sections)
+
+### `WallRizz/` — Wallpaper & System Theme Manager
+
+- **Target:** `~/.config/WallRizz/`
+- **Layout:** `WallRizz/.config/WallRizz/` — wallpaper daemon handler `hyprpaper@5hubham5ingh.js` + `themeExtensionScripts/` (kitty, hyprland, waybar, pi, sddm, rofi, yazi, btop, herdr, pywal, vsCode)
+- **Language:** JavaScript (ES2023, QuickJS runtime)
+- **Exclude from tracking:** runtime dirs `.pi/` and `themeExtensionScripts/.opencode/` (see `WallRizz/.config/WallRizz/.gitignore`)
+- **Cache:** generated themes live in `~/.cache/WallRizz/` (not tracked)
+- **Generated outputs:** themes are written into other targets at runtime (e.g. `hypr/wallrizHyprConfig.conf`, `waybar/theme.css`, `kitty/current-theme.conf`) — tracked but regenerated on every wallpaper change
 
 ### `tlp/` — Power Management
 
