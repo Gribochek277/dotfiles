@@ -1,0 +1,17 @@
+repository: serhii/dotfiles
+commit: d99db8ca132409997620c1a50686cfeeb1ae9483
+date: 2026-08-09T05:26:40+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(WallRizz): track WallRizz config as new Stow target
+Add ~/.config/WallRizz (wallpaper handler + theme extension scripts) to
+the repo as the WallRizz/ target. Runtime dirs (.pi/, .opencode/) are
+excluded. Update README and AGENTS.md with the new target and install
+instructions from the WallRizz readme.
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
