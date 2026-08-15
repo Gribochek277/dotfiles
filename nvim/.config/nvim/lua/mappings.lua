@@ -28,12 +28,10 @@ end
 keymaps.enable_builtin_layout_maps()
 
 map("n", ";", ":", { desc = "CMD enter command mode" })
-map("i", "jk", "<Esc>", { noremap = true, silent = true })
-map("i", "kj", "<Esc>", { noremap = true, silent = true })
-map("i", "ол", "<Esc>", { noremap = true, silent = true })
-map("i", "ло", "<Esc>", { noremap = true, silent = true })
-map("t", "ол", "<C-\\><C-N>", { noremap = true, silent = true })
-map("t", "ло", "<C-\\><C-N>", { noremap = true, silent = true })
+-- Exit insert mode: hh (EN) / рр (RU/UK — auto-translated by localized_keymaps, h→р on both).
+-- рр is rare in Russian/Ukrainian text, unlike the old ол/ло (стол, пол, молоко, слово).
+map("i", "hh", "<Esc>", { noremap = true, silent = true })
+map("t", "hh", "<C-\\><C-N>", { noremap = true, silent = true })
 
 map("n", "<C-p>", fzf.files, {})
 map("n", "<C-f>", search_project_text, { desc = "search project text" })

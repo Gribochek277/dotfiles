@@ -14,19 +14,12 @@ return {
   },
 
   {
+    -- master branch is archived and incompatible with Neovim 0.12
+    -- (custom injection directives crash with `attempt to call method 'range'`).
     "nvim-treesitter/nvim-treesitter",
-    branch = "master",
+    branch = "main",
     lazy = false,
-    build = ":TSUpdate",
-    opts = {
-      ensure_installed = {
-        "lua", "vim", "vimdoc", "javascript", "html",
-        "c_sharp", "typescript", "markdown", "markdown_inline", "python",
-      },
-      sync_install = false,
-      highlight = { enable = true },
-      indent = { enable = true },
-    },
+    build = ":TSInstall lua vim vimdoc javascript html c_sharp typescript markdown markdown_inline python",
   },
 
   {
