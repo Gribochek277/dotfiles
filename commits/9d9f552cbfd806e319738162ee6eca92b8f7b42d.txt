@@ -1,0 +1,19 @@
+repository: serhii/dotfiles
+commit: 9d9f552cbfd806e319738162ee6eca92b8f7b42d
+date: 2026-08-15T18:01:35+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+fix(nvim): treesitter main branch + hh/рр insert escape
+- nvim-treesitter: master is archived and incompatible with Neovim 0.12
+  (set-lang-from-info-string! crash: "attempt to call method 'range'");
+  switch to maintained main branch, drop obsolete v1 lazy opts
+- insert/terminal escape: replace jk/kj/ол/ло with hh (EN) + рр (RU/UK,
+  auto-registered by localized_keymaps) — ол/ло collided with common words
+  (стол, пол, молоко, слово)
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
