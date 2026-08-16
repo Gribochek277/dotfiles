@@ -116,6 +116,37 @@ function generateTheme(colorCodes, isDark = true) {
     theme.foreground = fg;
   }
 
+  // ── Semantic status colors ────────────────────────────────────────────
+  // Waybar modules (custom/llm, custom/llm_remote, custom/silo,
+  // power-profile, screenrecording) color their states via CSS classes;
+  // style.css consumes these @define-color variables. Derive harmonious
+  // variants from the palette's most saturated color, hue-rotated to fixed
+  // semantic hues, then run the same readability loop used above.
+  const vivid = colors.reduce((a, b) => (a.toHsv().s > b.toHsv().s ? a : b), colors[0]);
+  const vividHsv = vivid.toHsv();
+  const SEMANTIC_HUES = { success: 135, info: 210, warning: 45, danger: 5 };
+  for (const [name, hue] of Object.entries(SEMANTIC_HUES)) {
+    let c = new Color({ h: hue, s: Math.max(vividHsv.s, 60), v: Math.max(vividHsv.v, 75) });
+    let i = 0;
+    while (!Color.isReadable(c, theme.background) && i < 100) {
+      c = c.brighten(1).saturate(1);
+      i++;
+    }
+    theme[name] = c;
+  }
+  // muted = desaturated foreground (inactive states, e.g. silo.unmounted).
+  // NB: the vendored tinycolor shares state when constructed from an instance
+  // and its adjusters (desaturate/brighten/…) mutate in place — always build
+  // from a primitive hex string, never `new Color(instance).desaturate(…)`.
+  let muted = Color(theme.foreground.toHexString()).desaturate(55);
+  if (muted.toHexString() === theme.foreground.toHexString()) muted = muted.darken(20);
+  let i = 0;
+  while (!Color.isReadable(muted, theme.background) && i < 100) {
+    muted = muted.brighten(1);
+    i++;
+  }
+  theme.muted = muted;
+
   return theme;
 }
 
@@ -124,6 +155,11 @@ function generateThemeConfig(theme) {
   const config = `
 @define-color foreground ${theme.foreground.toHexString()};
 @define-color background ${theme.background.toHexString()};
+@define-color success ${theme.success.toHexString()};
+@define-color info ${theme.info.toHexString()};
+@define-color warning ${theme.warning.toHexString()};
+@define-color danger ${theme.danger.toHexString()};
+@define-color muted ${theme.muted.toHexString()};
 
 `.trim();
 

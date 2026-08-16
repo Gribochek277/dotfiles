@@ -91,7 +91,7 @@ tooltip {
 }
 
 #custom-screenrecording-indicator.active {
-  color: #a55555;
+  color: @danger;
 }
 
 #custom-llm {
@@ -111,15 +111,15 @@ tooltip {
 }
 
 #custom-llm.idle {
-  color: #73b373;
+  color: @success;
 }
 
 #custom-llm.prefill {
-  color: #73a5d4;
+  color: @info;
 }
 
 #custom-llm.generating {
-  color: #73a5d4;
+  color: @info;
 }
 
 #custom-llm_remote {
@@ -129,19 +129,19 @@ tooltip {
 }
 
 #custom-llm_remote.remote-idle {
-  color: #73b373;
+  color: @success;
 }
 
 #custom-llm_remote.remote-prefill {
-  color: #73a5d4;
+  color: @info;
 }
 
 #custom-llm_remote.remote-generating {
-  color: #73a5d4;
+  color: @info;
 }
 
 #custom-llm_remote.remote-sleeping {
-  color: #73b373;
+  color: @success;
 }
 
 #custom-llm_remote.remote-offline {
@@ -155,11 +155,18 @@ tooltip {
 }
 
 #custom-silo.mounted {
-  color: #73b373;
+  color: @success;
 }
 
 #custom-silo.unmounted {
-  color: #555555;
+  color: @muted;
+}
+
+#custom-session-archive {
+  margin: 0 0 0 5px;
+  min-width: 12px;
+  font-size: 11px;
+  color: @foreground;
 }
 
 #custom-power-profile {
@@ -169,7 +176,7 @@ tooltip {
 }
 
 #custom-power-profile.power-saver {
-  color: #73b373;
+  color: @success;
 }
 
 #custom-power-profile.balanced {
@@ -177,5 +184,5 @@ tooltip {
 }
 
 #custom-power-profile.performance {
-  color: #d4a259;
+  color: @warning;
 }
