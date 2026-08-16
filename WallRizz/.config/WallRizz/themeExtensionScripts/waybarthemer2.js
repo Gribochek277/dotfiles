@@ -1,10 +1,7 @@
 /*
- For:            Kitty terminal emulator, https://sw.kovidgoyal.net/kitty/
+ For:            Waybar, https://github.com/Alexays/Waybar
  Author:         https://github.com/5hubham5ingh
- Version:        0.0.2
- Prerequisite:   For this script to work, enable remote control in the kitty terminal.
-                 To enable remote control, start kitty with allow_remote_control=yes.
-                 Ex:- kitty allow_remote_control=yes
+ Version:        0.0.3
  */
 
 export function getDarkThemeConf(colors) {
@@ -18,8 +15,15 @@ export function getLightThemeConf(colors) {
 }
 
 export function setTheme(themeConfPath) {
-  const command = "kitty";
-  OS.exec([command, "cp", themeConfPath, "/home/serhii/.config/waybar/theme.css"]);
+  // Copy the generated @define-color CSS straight into waybar's dir (no kitty
+  // in the middle — the old `kitty cp` silently no-op'd when kitty wasn't
+  // running, so waybar never got the new colors).
+  const dest = HOME_DIR.concat("/.config/waybar/theme.css");
+  OS.exec(["sh", "-c", `mkdir -p "${HOME_DIR}/.config/waybar" && cp -f -- "${themeConfPath}" "${dest}"`]);
+  // Waybar re-reads its CSS on SIGUSR2 (config key `on-sigusr2`, default
+  // reload). Best-effort: if waybar isn't running, pkill exits non-zero and
+  // OS.exec swallows it — the next real start picks the file up anyway.
+  OS.exec(["pkill", "-SIGUSR2", "-x", "waybar"]);
 }
 
 function generateTheme(colorCodes, isDark = true) {
