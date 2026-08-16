@@ -1,0 +1,17 @@
+repository: serhii/dotfiles
+commit: d275f4c3a25a07faac6c41be6c4c7aee76caa5b4
+date: 2026-08-16T10:00:10+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+fix(waybar): copy theme.css directly + reload via SIGUSR2
+setTheme ran 'kitty cp' (copy-paste leftover from the kitty template),
+which silently no-op'd when kitty wasn't running, so waybar never
+received new colors. Copy with plain cp and force waybar to re-read
+the CSS with pkill -SIGUSR2 (on-sigusr2 defaults to reload).
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
