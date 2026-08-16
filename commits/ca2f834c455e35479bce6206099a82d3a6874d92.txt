@@ -1,0 +1,15 @@
+repository: serhii/dotfiles
+commit: ca2f834c455e35479bce6206099a82d3a6874d92
+date: 2026-08-16T11:03:17+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+wallrizz(hyprpaper): disable wallpaper splash text
+Write 'splash = false' into generated hyprpaper.conf so the
+"I use Arch, btw" - John Cena splash is not drawn on the desktop.
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
