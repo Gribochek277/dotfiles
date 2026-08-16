@@ -1,0 +1,35 @@
+repository: serhii/dotfiles
+commit: 03578871213bd07312962e5ad4be638d8e45d3e5
+date: 2026-08-17T02:14:03+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(nvim): theme picker with flow fallback + system theme sync
+nvim:
+- <leader>uc opens fzf-lua colorschemes picker (live preview)
+- 4 new themes: tokyonight, catppuccin, gruvbox, rose-pine
+- last theme persisted to stdpath(state)/nvim-theme.last, flow is the
+  fallback (first start or unknown saved theme)
+- enable exrc for project-local config (Obsidian vault)
+
+waybar:
+- new session-archive module + scripts (backup-wofi keeps old versions)
+- kitty -> ghostty in on-click actions
+- reworked system-update / llama-server / power-profile scripts
+
+hypr:
+- allow hyprlock to capture screen without permission popup
+- HyprMod blur: xray, 1 pass, no popups
+
+WallRizz:
+- fix palette mutation in theme scripts (kitty/rofi/pywal/pi/waybar):
+  copy before sort/splice so low-color wallpapers don't empty it
+- regenerate theme for current wallpaper
+
+docs: AGENTS.md theming notes
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
