@@ -35,6 +35,7 @@ function setWallpaper(wallpaperPath) {
       "  monitor =",
       `  path = ${wp}`,
       "}",
+      "splash = false",
       "HYPRPAPER_EOF",
       // Best-effort fixed-path copy; never fatal.
       `cp -f -- "${wp}" "${fixedWallpaper}" 2>/dev/null || true`,
