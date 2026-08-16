@@ -1,0 +1,23 @@
+repository: serhii/dotfiles
+commit: a06095f39de3f7ae69589e618d594f194b0b7f36
+date: 2026-08-16T10:16:37+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(waybar): semantic status colors (success/info/warning/danger/muted)
+Waybar modules (custom/llm, custom/llm_remote, custom/silo, power-profile,
+screenrecording) color states via CSS classes that were hardcoded hexes in
+style.css. The theme generator now emits @define-color success/info/warning/
+danger/muted derived from the palette (hue-rotated to semantic hues + WCAG
+readability loop), and style.css consumes them — so the status colors follow
+the wallpaper and are editable per-app in the tweaker.
+
+Also fixed a latent mutation bug: the vendored tinycolor shares state when
+constructed from an instance, so 'new Color(theme.foreground).desaturate()'
+silently overwrote the foreground; build from a hex string instead.
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
