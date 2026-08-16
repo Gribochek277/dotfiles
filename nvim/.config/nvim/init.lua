@@ -18,6 +18,9 @@ require("lazy").setup({
 
 require "configs.lsp"
 
+-- Restore the saved colorscheme (flow as fallback) once all eager themes are on rtp.
+require("theme").startup()
+
 require("neotest").setup({
   adapters = {
     require("neotest-dotnet")

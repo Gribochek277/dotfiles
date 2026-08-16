@@ -50,8 +50,9 @@ Push to both with `git pushboth` (git alias → `git push --all origin && git pu
 - **Plugin manager:** lazy.nvim (`lua/plugins/`, `lazy-lock.json`)
 - **Structure:**
   - `lua/configs/` — conform, lazy, lsp, nvim-dap, nvim-dap-ui
-  - `lua/plugins/` — per-plugin config modules (blink, colorscheme, fzf-lua, hop, pi, vim-navigator)
-  - `lua/` — mappings, options, autocmds, localized_keymaps, pi_models
+  - `lua/plugins/` — per-plugin config modules (blink, colorscheme, fzf-lua, hop, pi, themes, vim-navigator)
+  - `lua/` — mappings, options, autocmds, localized_keymaps, pi_models, theme
+- **Theming:** `flow` is the fallback colorscheme; extra themes (tokyonight, catppuccin, gruvbox, rose-pine) in `lua/plugins/themes.lua` are set up but never auto-applied. `lua/theme.lua` restores the last picked theme from `stdpath("state")/nvim-theme.last` at startup (falls back to flow); `<leader>uc` opens the fzf-lua colorschemes picker.
 - **Language:** Lua, formatted with [StyLua](https://github.com/JohnnyMorganz/StyLua)
 - **StyLua config:** `nvim/.config/nvim/.stylua.toml` (2-space indent, 120-col width, double quotes, no call parens)
 - **Run StyLua before committing:** `stylua -c nvim/.config/nvim/.stylua.toml nvim/.config/nvim/lua/`

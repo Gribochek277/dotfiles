@@ -18,7 +18,7 @@ return {
     },
   },
   config = function(_, opts)
+    -- Applied (or replaced by the saved theme) by require("theme").startup().
     require("flow").setup(opts)
-    vim.cmd("colorscheme flow")
   end,
 }

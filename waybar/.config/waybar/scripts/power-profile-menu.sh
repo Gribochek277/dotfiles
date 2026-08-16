@@ -1,59 +1,24 @@
 #!/usr/bin/env bash
 #
-# Waybar power profile menu: switch TLP power profile via wofi
+# Waybar power profile menu: switch TLP power profile via rofi
 # Uses tlp's built-in modes: performance, balanced, power-saver
 #
+# 2026-08-16: migrated from wofi to rofi. The menu now follows the
+# WallRizz theme automatically (~/.config/rofi/theme.rasi is regenerated
+# on every theme apply) instead of hand-generating wofi CSS from
+# ~/.config/waybar/theme.css. wofi itself was also broken by a corrupt
+# ~/.config/wofi/config (fixed separately).
 
-THEME_FILE="$HOME/.config/waybar/theme.css"
-MENU_CSS="/tmp/power-profile-menu.css"
+ROFI_THEME="$HOME/.config/rofi/theme.rasi"
 
-generate_menu_css() {
-	local fg="#8196a3" bg="#0c0d11"
-	if [ -f "$THEME_FILE" ]; then
-		fg=$(grep '@define-color foreground' "$THEME_FILE" | grep -oE '#[0-9a-fA-F]{6}' | head -1)
-		bg=$(grep '@define-color background' "$THEME_FILE" | grep -oE '#[0-9a-fA-F]{6}' | head -1)
-	fi
-	fg="${fg:-#8196a3}"
-	bg="${bg:-#0c0d11}"
-
-	local fr=$((0x${fg:1:2})) fg_=$((0x${fg:3:2})) fb=$((0x${fg:5:2}))
-	local br=$((0x${bg:1:2})) bg_=$((0x${bg:3:2})) bb=$((0x${bg:5:2}))
-
-	local mr=$(((fr * 20 + br * 80) / 100))
-	local mg=$(((fg_ * 20 + bg_ * 80) / 100))
-	local mb=$(((fb * 20 + bb * 80) / 100))
-	local sel_bg=$(printf '#%02x%02x%02x' "$mr" "$mg" "$mb")
-
-	local dr=$(((fr * 30 + br * 70) / 100))
-	local dg=$(((fg_ * 30 + bg_ * 70) / 100))
-	local db=$(((fb * 30 + bb * 70) / 100))
-	local border=$(printf '#%02x%02x%02x' "$dr" "$dg" "$db")
-
-	cat >"$MENU_CSS" <<EOF
-window {
-    background-color: ${bg};
-    border: 1px solid ${border};
-    border-radius: 4px;
-    font-family: 'JetBrainsMonoNerdFontMono';
-    font-size: 12px;
-    color: ${fg};
-}
-#input {
-    padding: 6px 12px;
-    border: none;
-    border-bottom: 1px solid ${border};
-    background: transparent;
-    color: ${fg};
-}
-#entry {
-    padding: 6px 16px;
-    margin: 0 4px;
-}
-#entry:selected {
-    background-color: ${sel_bg};
-    border-radius: 2px;
-}
-EOF
+rofi_dmenu() {
+    # dmenu-compatible frontend, themed like the rest of the environment
+    if [ -f "$ROFI_THEME" ]; then
+        rofi -dmenu -theme "$ROFI_THEME" -font "JetBrainsMono Nerd Font Mono 12" \
+            -width 30 -lines 3 "$@"
+    else
+        rofi -dmenu -font "JetBrainsMono Nerd Font Mono 12" -width 30 -lines 3 "$@"
+    fi
 }
 
 get_current_profile() {
@@ -84,8 +49,6 @@ set_profile() {
 }
 
 main() {
-	generate_menu_css
-
 	local current
 	current=$(get_current_profile)
 
@@ -109,7 +72,7 @@ main() {
 	fi
 
 	local selected
-	selected=$(printf '%s\n' "${items[@]}" | wofi --dmenu --prompt "" -W 220 -s "$MENU_CSS")
+	selected=$(printf '%s\n' "${items[@]}" | rofi_dmenu)
 
 	[ -z "$selected" ] && exit 0
 

@@ -168,7 +168,10 @@ function generateThemeConfig(theme) {
 
 function selectDistinctColors(colorObjects, count) {
   // Sort colors by perceived brightness
-  const sortedColors = colorObjects.sort((a, b) =>
+  // NB: copy before sorting/splicing — .sort() and .splice() mutate the
+  // caller's palette array in place, which emptied it when the wallpaper
+  // had few distinct colors (crashed downstream `vivid.toHsv()`).
+  const sortedColors = colorObjects.slice().sort((a, b) =>
     a.getBrightness() - b.getBrightness()
   );
 

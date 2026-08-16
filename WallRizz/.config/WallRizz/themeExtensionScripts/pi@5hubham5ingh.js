@@ -304,7 +304,9 @@ function pickColor(colors, isDark, dark) {
 
 /** Pick N visually distinct colors by max-min color distance. */
 function selectDistinctColors(colorObjects, count) {
-  const sortedColors = colorObjects.sort((a, b) =>
+  // NB: copy before sorting/splicing — .sort()/.splice() would mutate the
+  // caller's palette in place and empty it for low-color wallpapers.
+  const sortedColors = colorObjects.slice().sort((a, b) =>
     a.getBrightness() - b.getBrightness()
   );
   const selectedColors = [];

@@ -1,20 +1,8 @@
 #!/usr/bin/env bash
-# 2026-08-16: migrated from wofi to rofi — the menu now follows the
-# WallRizz theme automatically (~/.config/rofi/theme.rasi). The original
-# wofi-based version is kept in backup-wofi/llama-server-menu.sh.
 
 CONFIG_FILE="${LLAMA_SERVER_CONFIG:-$HOME/.config/waybar/scripts/llama-server-config.json}"
-ROFI_THEME="$HOME/.config/rofi/theme.rasi"
-
-rofi_dmenu() {
-    # dmenu-compatible frontend, themed like the rest of the environment
-    if [ -f "$ROFI_THEME" ]; then
-        rofi -dmenu -theme "$ROFI_THEME" -font "JetBrainsMono Nerd Font Mono 12" \
-            -width 30 -lines 10 "$@"
-    else
-        rofi -dmenu -font "JetBrainsMono Nerd Font Mono 12" -width 30 -lines 10 "$@"
-    fi
-}
+THEME_FILE="$HOME/.config/waybar/theme.css"
+MENU_CSS="/tmp/llama-menu-generated.css"
 
 LLAMACPP_DIR=$(jq -r '.llamacpp_dir // "$HOME/llamacpp"' "$CONFIG_FILE")
 PORT=$(jq -r '.port // 8080' "$CONFIG_FILE")
@@ -23,6 +11,55 @@ LOG_FILE=$(jq -r '.log_file // "/tmp/llama-server.log"' "$CONFIG_FILE")
 PID_FILE=$(jq -r '.pid_file // "/tmp/llama-server.pid"' "$CONFIG_FILE")
 SCRIPT_FILE=$(jq -r '.script_file // "/tmp/llama-server-script"' "$CONFIG_FILE")
 BASE_URL="http://${HOST}:${PORT}"
+
+generate_menu_css() {
+    local fg="#699bbd" bg="#142022"
+    if [ -f "$THEME_FILE" ]; then
+        fg=$(grep '@define-color foreground' "$THEME_FILE" | grep -oE '#[0-9a-fA-F]{6}' | head -1)
+        bg=$(grep '@define-color background' "$THEME_FILE" | grep -oE '#[0-9a-fA-F]{6}' | head -1)
+    fi
+    fg="${fg:-#699bbd}"
+    bg="${bg:-#142022}"
+
+    local fr=$(( 0x${fg:1:2} )) fg_=$(( 0x${fg:3:2} )) fb=$(( 0x${fg:5:2} ))
+    local br=$(( 0x${bg:1:2} )) bg_=$(( 0x${bg:3:2} )) bb=$(( 0x${bg:5:2} ))
+
+    local mr=$(( (fr * 20 + br * 80) / 100 ))
+    local mg=$(( (fg_ * 20 + bg_ * 80) / 100 ))
+    local mb=$(( (fb * 20 + bb * 80) / 100 ))
+    local sel_bg=$(printf '#%02x%02x%02x' "$mr" "$mg" "$mb")
+
+    local dr=$(( (fr * 30 + br * 70) / 100 ))
+    local dg=$(( (fg_ * 30 + bg_ * 70) / 100 ))
+    local db=$(( (fb * 30 + bb * 70) / 100 ))
+    local border=$(printf '#%02x%02x%02x' "$dr" "$dg" "$db")
+
+    cat > "$MENU_CSS" << EOF
+window {
+    background-color: ${bg};
+    border: 1px solid ${border};
+    border-radius: 4px;
+    font-family: 'JetBrainsMonoNerdFontMono';
+    font-size: 12px;
+    color: ${fg};
+}
+#input {
+    padding: 6px 12px;
+    border: none;
+    border-bottom: 1px solid ${border};
+    background: transparent;
+    color: ${fg};
+}
+#entry {
+    padding: 6px 16px;
+    margin: 0 4px;
+}
+#entry:selected {
+    background-color: ${sel_bg};
+    border-radius: 2px;
+}
+EOF
+}
 
 IC_START=$'\uf04b'
 IC_STOP=$'\uf04d'
@@ -96,6 +133,7 @@ scan_scripts() {
 }
 
 main() {
+    generate_menu_css
     local items=()
     declare -A script_map
 
@@ -113,8 +151,15 @@ main() {
     items+=("${IC_WEB} Open Web UI")
     items+=("${IC_CONFIG} Edit Config")
 
+    local height
+    height=$(( ${#items[@]} * 30 + 40 ))
+    [ "$height" -gt 400 ] && height=400
+
+    local menu_input
+    menu_input=$(printf '%s\n' "${items[@]}")
+
     local selected
-    selected=$(printf '%s\n' "${items[@]}" | rofi_dmenu -i)
+    selected=$(echo "$menu_input" | wofi --dmenu --prompt "" -W 240 -H "$height" -s "$MENU_CSS" -i 2>/dev/null)
 
     [ -z "$selected" ] && exit 0
 

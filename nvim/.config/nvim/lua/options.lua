@@ -3,6 +3,10 @@ local o = vim.o
 
 o.autoread = true
 
+-- Project-local config: читать .nvim.lua/.nvimrc из cwd и родительских папок.
+-- Используется ворультом (Obsidian Vault), чтобы грузить плагины только там.
+o.exrc = true
+
 opt.number = true
 opt.relativenumber = true
 

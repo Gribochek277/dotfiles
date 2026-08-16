@@ -1,2 +1,7 @@
-@define-color foreground #6ddfff;
-@define-color background #0a5e89;
+@define-color foreground #b4d7f9;
+@define-color background #252126;
+@define-color success #4dbf69;
+@define-color info #538fcb;
+@define-color warning #bfa34d;
+@define-color danger #db645b;
+@define-color muted #9e9e9e;

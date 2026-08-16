@@ -11,6 +11,7 @@
   ],
   "modules-center": [
     "clock",
+    "custom/session-archive",
     "custom/system-update"
   ],
   "modules-right": [
@@ -51,11 +52,20 @@
       "5": []
     }
   },
+  "custom/session-archive": {
+    "exec": "/home/serhii/.config/waybar/scripts/session-archive.sh module",
+    "return-type": "json",
+    "format": "{}",
+    "on-click": "ghostty -e /home/serhii/.config/waybar/scripts/session-archive.sh",
+    "interval": 300,
+    "tooltip": true,
+    "signal": 1
+  },
   "custom/system-update": {
     "exec": "/home/serhii/.config/waybar/scripts/system-update.sh module",
     "return-type": "json",
     "format": "{}",
-    "on-click": "kitty -e /home/serhii/.config/waybar/scripts/system-update.sh",
+    "on-click": "ghostty -e /home/serhii/.config/waybar/scripts/system-update.sh",
     "interval": 3600,
     "tooltip": true,
     "signal": 1
@@ -85,7 +95,7 @@
   "cpu": {
     "interval": 5,
     "format": "\udb80\udf5b",
-    "on-click": "kitty btop"
+    "on-click": "ghostty -e btop"
   },
   "clock": {
     "format": "{:L%A %H:%M}",

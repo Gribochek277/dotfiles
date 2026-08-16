@@ -64,6 +64,7 @@ map('', 'f', function()
 end, { remap = true })
 
 map("n", "<leader>bn", "<cmd>enew<CR>", { desc = "[B]uffer [N]ew" })
+map("n", "<leader>uc", fzf.colorschemes, { desc = "[U]i [C]olorscheme" })
 
 map("n", "<tab>", "<cmd>bnext<CR>", { desc = "buffer goto next" })
 map("n", "<leader>bl", "<cmd>bnext<CR>", { desc = "[L]Buffer Goto Next(TAB)" })
@@ -116,6 +117,7 @@ wk.add({
   { "<leader>cg", group = "[G]oto" },
 
   { "<leader>u",  group = "[U]i" },
+  { "<leader>uc", function() fzf.colorschemes() end, desc = "[C]olorscheme" },
   { "<leader>un", "<cmd>set nu!<CR>",         desc = "Toggle Line [N]umber" },
   { "<leader>ur", "<cmd>set rnu!<CR>",        desc = "Toggle [R]elative Number" },
 

@@ -6,6 +6,7 @@
 # 	- checkupdates (pacman-contrib)
 # 	- notify-send (libnotify)
 # 	- optional: an AUR helper (aura, paru, pikaur, trizen, yay)
+# 	- optional: flatpak
 #
 # Author: Jesse Mirabel <sejjymvm@gmail.com>
 # Created: August 16, 2025
@@ -16,12 +17,17 @@ BLU='\033[1;34m'
 RST='\033[0m'
 
 TIMEOUT=5
+FLATPAK_TIMEOUT=30
 
 check-updates() {
-	repo=$(timeout $TIMEOUT checkupdates 2> /dev/null | wc -l)
+	repo=$(timeout -k 1 $TIMEOUT checkupdates 2> /dev/null | wc -l)
 
 	if [[ -n $helper ]]; then
-		aur=$(timeout $TIMEOUT "$helper" -Quaq 2> /dev/null | wc -l)
+		aur=$(timeout -k 1 $TIMEOUT "$helper" -Quaq 2> /dev/null | wc -l)
+	fi
+
+	if command -v flatpak &> /dev/null; then
+		flatpak=$(timeout -k 1 $FLATPAK_TIMEOUT flatpak remote-ls --updates 2> /dev/null | wc -l)
 	fi
 }
 
@@ -29,8 +35,29 @@ update-packages() {
 	printf '\n%bUpdating pacman packages...%b\n' "$BLU" "$RST"
 	sudo pacman -Syu
 
-	printf '\n%bUpdating AUR packages...%b\n' "$BLU" "$RST"
-	"$helper" -Syu
+	if [[ -n $helper ]]; then
+		printf '\n%bUpdating AUR packages...%b\n' "$BLU" "$RST"
+		"$helper" -Syu
+	fi
+
+	if command -v flatpak &> /dev/null; then
+		printf '\n%bUpdating Flatpak packages...%b\n' "$BLU" "$RST"
+
+		local flatpak_update_opts=()
+
+		# Workaround: ostree 2026.3 broke flatpak static-delta pulls
+		# (ostreedev/ostree#3635, flatpak/flatpak#6770). Drop deltas until
+		# the fix is released upstream.
+		if pacman -Qi ostree &> /dev/null; then
+			local ostree_ver
+			ostree_ver=$(pacman -Qi ostree | awk '/^Version/{print $3}')
+			if (( $(vercmp "$ostree_ver" "2026.3") >= 0 )) && (( $(vercmp "$ostree_ver" "2026.4") < 0 )); then
+				flatpak_update_opts+=(--no-static-deltas)
+			fi
+		fi
+
+		flatpak update "${flatpak_update_opts[@]}"
+	fi
 
 	# use signal to update the module
 	pkill -RTMIN+1 waybar
@@ -47,7 +74,11 @@ display-module() {
 		tooltip+="\nAUR($helper): $aur"
 	fi
 
-	local total=$((repo + aur))
+	if command -v flatpak &> /dev/null; then
+		tooltip+="\nFlatpak: $flatpak"
+	fi
+
+	local total=$((repo + aur + flatpak))
 
 	if ((total == 0)); then
 		echo "{ \"text\": \"󰸟\", \"tooltip\": \"No updates available\" }"
@@ -65,6 +96,7 @@ main() {
 	helper=${bin##*/}
 	repo=0
 	aur=0
+	flatpak=0
 
 	case $arg in
 		'module')

@@ -115,7 +115,9 @@ color15 ${theme.color7.lighten().toHexString()}
 
 function selectDistinctColors(colorObjects, count) {
   // Sort colors by perceived brightness
-  const sortedColors = colorObjects.sort((a, b) =>
+  // NB: copy before sorting/splicing — .sort()/.splice() would mutate the
+  // caller's palette in place and empty it for low-color wallpapers.
+  const sortedColors = colorObjects.slice().sort((a, b) =>
     a.getBrightness() - b.getBrightness()
   );
 
