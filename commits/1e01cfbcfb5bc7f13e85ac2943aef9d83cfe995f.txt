@@ -1,0 +1,17 @@
+repository: serhii/dotfiles
+commit: 1e01cfbcfb5bc7f13e85ac2943aef9d83cfe995f
+date: 2026-09-19T22:32:45+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(nvim): animated spinner in pi busy indicator
+The lualine busy component now cycles through braille spinner frames
+while requests run (e.g. "✦ ⠋ bash", "✦2 ⠋"); a 120ms timer pumps
+lualine refreshes only while a request is active and stops when the
+last one finishes, so the status line stays fully static when idle.
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
