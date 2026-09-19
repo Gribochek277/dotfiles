@@ -1,0 +1,22 @@
+repository: serhii/dotfiles
+commit: 8b621afe00321d207909f99b886f2338a2a6c972
+date: 2026-09-19T22:09:20+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(nvim): pi model picker mirrors pi's available models at runtime
+The picker now asks pi itself which models are usable (pi --list-models),
+so it shows every provider with working credentials: freellmapi,
+opencode-go, nvidia and the local llama.cpp instances (127 models).
+Results are cached (mtime of models.json/models-store.json/auth.json +
+10min TTL) and refreshed in the background, so consecutive picks are
+instant. The default selection follows pi's own settings.json default
+(opencode-go/deepseek-v4-flash) and still persists per pick across
+restarts; the synchronous models.json parse remains as an offline
+fallback.
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
