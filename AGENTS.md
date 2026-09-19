@@ -50,14 +50,15 @@ Push to both with `git pushboth` (git alias → `git push --all origin && git pu
 - **Plugin manager:** lazy.nvim (`lua/plugins/`, `lazy-lock.json`)
 - **Structure:**
   - `lua/configs/` — conform, lazy, lsp, nvim-dap, nvim-dap-ui
-  - `lua/plugins/` — per-plugin config modules (blink, colorscheme, fzf-lua, hop, pi, themes, vim-navigator)
-  - `lua/` — mappings, options, autocmds, localized_keymaps, pi_models, theme
+  - `lua/plugins/` — per-plugin config modules (blink, colorscheme, fzf-lua, hop, themes, vim-navigator)
+  - `lua/` — mappings, options, autocmds, localized_keymaps, pi_agent, pi_models, theme
+- **Pi integration:** self-contained runner (`lua/pi_agent.lua`) spawns one `pi --mode rpc` job per request (`--no-extensions`, non-interactive); progress lives in lualine (`busy_component`) + vim.notify, never in a window over the buffer. Multiple requests run concurrently. `lua/pi_models.lua` provides the model picker (`:PiModel`) by querying `pi --list-models` at runtime, backed by `~/.pi/agent/models.json` as fallback.
 - **Theming:** `flow` is the fallback colorscheme; extra themes (tokyonight, catppuccin, gruvbox, rose-pine) in `lua/plugins/themes.lua` are set up but never auto-applied. `lua/theme.lua` restores the last picked theme from `stdpath("state")/nvim-theme.last` at startup (falls back to flow); `<leader>uc` opens the fzf-lua colorschemes picker.
 - **Language:** Lua, formatted with [StyLua](https://github.com/JohnnyMorganz/StyLua)
 - **StyLua config:** `nvim/.config/nvim/.stylua.toml` (2-space indent, 120-col width, double quotes, no call parens)
 - **Run StyLua before committing:** `stylua -c nvim/.config/nvim/.stylua.toml nvim/.config/nvim/lua/`
 - **Exclude from tracking:** `nvim/.config/nvim/.opencode/` (third-party tool runtime data)
-- **Key plugins:** blink.cmp (completion), nvim-dap (debugging), fzf-lua, hop, vim-navigator, custom `pi` plugin
+- **Key plugins:** blink.cmp (completion), nvim-dap (debugging), fzf-lua, hop, vim-navigator
 
 ### `waybar/` — Waybar Status Bar
 

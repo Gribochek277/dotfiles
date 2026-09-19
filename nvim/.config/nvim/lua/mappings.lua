@@ -1,6 +1,6 @@
-local keymaps = require("localized_keymaps")
+local keymaps = require "localized_keymaps"
 local map = keymaps.set
-local fzf = require("fzf-lua")
+local fzf = require "fzf-lua"
 
 local function format_code()
   require("conform").format { lsp_format = "fallback" }
@@ -22,7 +22,7 @@ local function project_root()
 end
 
 local function search_project_text()
-  fzf.live_grep({ cwd = project_root() })
+  fzf.live_grep { cwd = project_root() }
 end
 
 keymaps.enable_builtin_layout_maps()
@@ -51,16 +51,16 @@ local function nav(dir)
   end
 end
 
-map("n", "<C-h>", nav("h"), { desc = "switch window left" })
-map("n", "<C-j>", nav("j"), { desc = "switch window down" })
-map("n", "<C-k>", nav("k"), { desc = "switch window up" })
-map("n", "<C-l>", nav("l"), { desc = "switch window right" })
+map("n", "<C-h>", nav "h", { desc = "switch window left" })
+map("n", "<C-j>", nav "j", { desc = "switch window down" })
+map("n", "<C-k>", nav "k", { desc = "switch window up" })
+map("n", "<C-l>", nav "l", { desc = "switch window right" })
 
 map("n", "<Esc>", "<cmd>noh<CR>", { desc = "general clear highlights" })
 
-local hop = require('hop')
-map('', 'f', function()
-  hop.hint_char2({ current_line_only = false })
+local hop = require "hop"
+map("", "f", function()
+  hop.hint_char2 { current_line_only = false }
 end, { remap = true })
 
 map("n", "<leader>bn", "<cmd>enew<CR>", { desc = "[B]uffer [N]ew" })
@@ -102,65 +102,161 @@ map("n", "<F10>", "<Cmd>lua require'dap'.step_over()<CR>", dap_opts)
 map("n", "<F11>", "<Cmd>lua require'dap'.step_into()<CR>", dap_opts)
 map("n", "<F8>", "<Cmd>lua require'dap'.step_out()<CR>", dap_opts)
 
-local wk = require("which-key")
-wk.add({
-  { "<leader>f",  group = "[F]ile" },
-  { "<leader>ff", function() fzf.files() end,                                    desc = "[F]ind [F]iles(CTRL+p)" },
-  { "<leader>fa", function() fzf.files({ no_ignore = true, hidden = true }) end, desc = "[F]ind [A]ll Files" },
-  { "<leader>fn", "<cmd>enew<CR>",                                               desc = "[N]ew [F]ile" },
-  { "<leader>fr", function() fzf.oldfiles() end,                                 desc = "[R]ecent [F]iles" },
+local wk = require "which-key"
+wk.add {
+  { "<leader>f", group = "[F]ile" },
+  {
+    "<leader>ff",
+    function()
+      fzf.files()
+    end,
+    desc = "[F]ind [F]iles(CTRL+p)",
+  },
+  {
+    "<leader>fa",
+    function()
+      fzf.files { no_ignore = true, hidden = true }
+    end,
+    desc = "[F]ind [A]ll Files",
+  },
+  { "<leader>fn", "<cmd>enew<CR>", desc = "[N]ew [F]ile" },
+  {
+    "<leader>fr",
+    function()
+      fzf.oldfiles()
+    end,
+    desc = "[R]ecent [F]iles",
+  },
 
-  { "<leader>c",  group = "[C]ode" },
+  { "<leader>c", group = "[C]ode" },
   { "<leader>cf", desc = "Format", mode = { "n", "x" } },
   { "<leader>cl", "J", desc = "[L]ine join", remap = true, mode = { "x" } },
   { "<leader>cr", vim.lsp.codelens.run, desc = "[R]un CodeLens" },
   { "<leader>cg", group = "[G]oto" },
 
-  { "<leader>u",  group = "[U]i" },
-  { "<leader>uc", function() fzf.colorschemes() end, desc = "[C]olorscheme" },
-  { "<leader>un", "<cmd>set nu!<CR>",         desc = "Toggle Line [N]umber" },
-  { "<leader>ur", "<cmd>set rnu!<CR>",        desc = "Toggle [R]elative Number" },
+  { "<leader>u", group = "[U]i" },
+  {
+    "<leader>uc",
+    function()
+      fzf.colorschemes()
+    end,
+    desc = "[C]olorscheme",
+  },
+  { "<leader>un", "<cmd>set nu!<CR>", desc = "Toggle Line [N]umber" },
+  { "<leader>ur", "<cmd>set rnu!<CR>", desc = "Toggle [R]elative Number" },
 
-  { "<leader>d",  group = "[D]ebug" },
-  { "<leader>dc", "<Cmd>lua require'dap'.continue()<CR>",     desc = "[C]ontinue(F5)" },
+  { "<leader>d", group = "[D]ebug" },
+  { "<leader>dc", "<Cmd>lua require'dap'.continue()<CR>", desc = "[C]ontinue(F5)" },
   { "<leader>db", "<Cmd>lua require'dap'.toggle_breakpoint()<CR>", desc = "Toggle [B]reakpoint(F9)" },
-  { "<leader>do", "<Cmd>lua require'dap'.step_over()<CR>",    desc = "Step [O]ver(F10)" },
-  { "<leader>di", "<Cmd>lua require'dap'.step_into()<CR>",    desc = "Step [I]nto(F11)" },
-  { "<leader>dO", "<Cmd>lua require'dap'.step_out()<CR>",     desc = "Step [O]ut(F8)" },
-  { "<leader>dr", "<Cmd>lua require'dap'.repl.open()<CR>",    desc = "Open [R]EPL" },
-  { "<leader>dl", "<Cmd>lua require'dap'.run_last()<CR>",     desc = "Re-run [L]ast" },
+  { "<leader>do", "<Cmd>lua require'dap'.step_over()<CR>", desc = "Step [O]ver(F10)" },
+  { "<leader>di", "<Cmd>lua require'dap'.step_into()<CR>", desc = "Step [I]nto(F11)" },
+  { "<leader>dO", "<Cmd>lua require'dap'.step_out()<CR>", desc = "Step [O]ut(F8)" },
+  { "<leader>dr", "<Cmd>lua require'dap'.repl.open()<CR>", desc = "Open [R]EPL" },
+  { "<leader>dl", "<Cmd>lua require'dap'.run_last()<CR>", desc = "Re-run [L]ast" },
   { "<leader>dt", "<Cmd>lua require('neotest').run.run({strategy = 'dap'})<CR>", desc = "Debug [T]est" },
 
-  { "<leader>g",  group = "[G]it" },
-  { "<leader>gc", function() fzf.git_commits() end,                 desc = "[C]ommits" },
-  { "<leader>gs", function() fzf.git_status() end,                  desc = "[S]tatus" },
+  { "<leader>g", group = "[G]it" },
+  {
+    "<leader>gc",
+    function()
+      fzf.git_commits()
+    end,
+    desc = "[C]ommits",
+  },
+  {
+    "<leader>gs",
+    function()
+      fzf.git_status()
+    end,
+    desc = "[S]tatus",
+  },
 
-  { "<leader>t",  group = "[T]erminal" },
-  { "<leader>th", function() require("snacks.terminal").toggle(nil, { win = { position = "bottom", height = 0.3 } }) end, desc = "[H]orizontal" },
-  { "<leader>tv", function() require("snacks.terminal").toggle(nil, { win = { position = "right", width = 0.4 } }) end,  desc = "[V]ertical" },
-  { "<leader>tf", function() require("snacks.terminal").toggle(nil, { win = { position = "float" } }) end,               desc = "[F]loat" },
+  { "<leader>t", group = "[T]erminal" },
+  {
+    "<leader>th",
+    function()
+      require("snacks.terminal").toggle(nil, { win = { position = "bottom", height = 0.3 } })
+    end,
+    desc = "[H]orizontal",
+  },
+  {
+    "<leader>tv",
+    function()
+      require("snacks.terminal").toggle(nil, { win = { position = "right", width = 0.4 } })
+    end,
+    desc = "[V]ertical",
+  },
+  {
+    "<leader>tf",
+    function()
+      require("snacks.terminal").toggle(nil, { win = { position = "float" } })
+    end,
+    desc = "[F]loat",
+  },
 
-  { "<leader>w",  group = "[W]hich-key" },
-  { "<leader>wa", "<cmd>WhichKey <CR>",                                          desc = "[A]ll Keymaps" },
-  { "<leader>wq", function() vim.cmd("WhichKey " .. vim.fn.input "WhichKey: ") end, desc = "[Q]uery Lookup" },
+  { "<leader>w", group = "[W]hich-key" },
+  { "<leader>wa", "<cmd>WhichKey <CR>", desc = "[A]ll Keymaps" },
+  {
+    "<leader>wq",
+    function()
+      vim.cmd("WhichKey " .. vim.fn.input "WhichKey: ")
+    end,
+    desc = "[Q]uery Lookup",
+  },
 
-  { "<leader>s",  group = "[S]earch" },
-  { "<leader>sw", function() fzf.live_grep() end,              desc = "[W]ord(Live Grep)" },
-  { "<leader>sb", function() fzf.buffers() end,                desc = "[B]uffers" },
-  { "<leader>sh", function() fzf.help_tags() end,              desc = "[H]elp Tags" },
-  { "<leader>sm", function() fzf.marks() end,                  desc = "[M]arks" },
-  { "<leader>sz", function() fzf.lines() end,                  desc = "Fu[z]zy Find Buffer" },
+  { "<leader>s", group = "[S]earch" },
+  {
+    "<leader>sw",
+    function()
+      fzf.live_grep()
+    end,
+    desc = "[W]ord(Live Grep)",
+  },
+  {
+    "<leader>sb",
+    function()
+      fzf.buffers()
+    end,
+    desc = "[B]uffers",
+  },
+  {
+    "<leader>sh",
+    function()
+      fzf.help_tags()
+    end,
+    desc = "[H]elp Tags",
+  },
+  {
+    "<leader>sm",
+    function()
+      fzf.marks()
+    end,
+    desc = "[M]arks",
+  },
+  {
+    "<leader>sz",
+    function()
+      fzf.lines()
+    end,
+    desc = "Fu[z]zy Find Buffer",
+  },
 
-  { "<leader>e",  group = "[E]xplorer" },
+  { "<leader>e", group = "[E]xplorer" },
   { "<leader>et", "<cmd>NvimTreeToggle<CR>", desc = "[T]oggle Tree" },
-  { "<leader>ef", "<cmd>NvimTreeFocus<CR>",  desc = "[F]ocus Tree" },
+  { "<leader>ef", "<cmd>NvimTreeFocus<CR>", desc = "[F]ocus Tree" },
 
-  { "<leader>b",  group = "[B]uffer" },
+  { "<leader>b", group = "[B]uffer" },
 
-  { "<leader>a",  group = "[A]I" },
-  { "<leader>ai", "<cmd>PiAsk<CR>",          desc = "[A]sk Pi",             mode = { "n" } },
-  { "<leader>ai", ":PiAskSelection<CR>",    desc = "[A]sk Pi (selection)", mode = { "x" } },
-  { "<leader>am", function() require("pi_models").pick() end, desc = "[M]odel picker" },
-  { "<leader>ac", "<cmd>PiCancel<CR>",       desc = "[C]ancel request" },
-  { "<leader>al", "<cmd>PiLog<CR>",          desc = "[L]og" },
-})
+  { "<leader>a", group = "[A]I" },
+  { "<leader>ai", "<cmd>PiAsk<CR>", desc = "[A]sk Pi", mode = { "n" } },
+  { "<leader>ai", ":PiAskSelection<CR>", desc = "[A]sk Pi (selection)", mode = { "x" } },
+  {
+    "<leader>am",
+    function()
+      require("pi_models").pick()
+    end,
+    desc = "[M]odel picker",
+  },
+  { "<leader>ac", "<cmd>PiCancel<CR>", desc = "[C]ancel all requests" },
+  { "<leader>al", "<cmd>PiLog<CR>", desc = "[L]og" },
+}

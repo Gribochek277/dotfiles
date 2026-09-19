@@ -1,12 +1,10 @@
---- Dynamic model registry for pi.nvim.
+--- Dynamic model registry for pi_agent.
 --- The picker asks pi itself which models are available (`pi --list-models`)
 --- every time it opens, so the list always matches pi's own picker: models
 --- from every provider with working credentials, refreshed catalogs
 --- included. A synchronous parse of ~/.pi/agent/models.json serves as the
 --- fallback and provides the default selection. The active choice
---- persists across restarts. pi.nvim rebuilds its command from
---- require("pi.config").get() on every request, so mutating that live
---- table switches the model at runtime.
+--- persists across restarts and is read by pi_agent on every request.
 local M = {}
 
 local PI_BIN = vim.fn.exepath "pi"
@@ -288,18 +286,6 @@ function M.save()
   f:close()
 end
 
---- Write the active entry into pi.nvim's live config.
---- Requiring pi.config lazily loads the plugin if needed.
-function M.apply()
-  local ok, pi_config = pcall(require, "pi.config")
-  if not ok then
-    return
-  end
-  local cfg = pi_config.get()
-  cfg.provider = M.entry().provider
-  cfg.model = M.entry().model
-end
-
 local function is_current(e)
   local active = M.entry()
   return e.provider == active.provider and e.model == active.model
@@ -328,7 +314,6 @@ local function show_picker(entries)
     end
     current = choice
     M.save()
-    M.apply()
     vim.notify("pi → " .. choice.name)
   end)
 end

@@ -32,10 +32,18 @@ return {
       },
       ensure_installed = {
         "lua-language-server",
-        "xmlformatter", "csharpier", "prettier",
-        "stylua", "bicep-lsp", "html-lsp", "css-lsp",
-        "eslint-lsp", "typescript-language-server", "json-lsp",
-        "rust-analyzer", "basedpyright",
+        "xmlformatter",
+        "csharpier",
+        "prettier",
+        "stylua",
+        "bicep-lsp",
+        "html-lsp",
+        "css-lsp",
+        "eslint-lsp",
+        "typescript-language-server",
+        "json-lsp",
+        "rust-analyzer",
+        "basedpyright",
         "roslyn",
       },
     },
@@ -97,7 +105,7 @@ return {
     event = "VeryLazy",
     priority = 1000,
     config = function()
-      require("tiny-inline-diagnostic").setup({
+      require("tiny-inline-diagnostic").setup {
         signs = {
           left = "",
           right = "",
@@ -110,8 +118,8 @@ return {
         blend = {
           factor = 0.22,
         },
-      })
-      vim.diagnostic.config({ virtual_text = false })
+      }
+      vim.diagnostic.config { virtual_text = false }
     end,
   },
 
@@ -133,7 +141,7 @@ return {
       on_attach = function(bufnr)
         vim.wo.wrap = true
         local map = require("localized_keymaps").set
-        local api = require("nvim-tree.api")
+        local api = require "nvim-tree.api"
         api.config.mappings.default_on_attach(bufnr)
 
         local bufopts = { buffer = bufnr, nowait = true }
@@ -178,6 +186,9 @@ return {
         lualine_x = {
           function()
             return require("pi_models").label()
+          end,
+          function()
+            return require("pi_agent").busy_component()
           end,
           "encoding",
           "fileformat",
