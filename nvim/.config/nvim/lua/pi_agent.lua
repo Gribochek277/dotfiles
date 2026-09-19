@@ -34,6 +34,10 @@ local sessions = {} -- active and finished, newest last
 local log_lines = {}
 local log_buf = nil
 
+local SPINNER = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+local spin_idx = 1
+local spinner_timer = nil
+
 function M.setup(opts)
   CONFIG = vim.tbl_deep_extend("force", CONFIG, opts or {})
 end
@@ -54,6 +58,37 @@ local function lualine_refresh()
   pcall(function()
     require("lualine").refresh()
   end)
+end
+
+--- Stop the spinner timer (statusline goes static when idle).
+local function stop_spinner()
+  if spinner_timer then
+    spinner_timer:stop()
+    spinner_timer:close()
+    spinner_timer = nil
+  end
+end
+
+--- Keep the spinner turning while requests are running.
+local function ensure_spinner()
+  if spinner_timer then
+    return
+  end
+  spinner_timer = vim.loop.new_timer()
+  spinner_timer:start(
+    0,
+    120,
+    vim.schedule_wrap(function()
+      if #active_sessions() == 0 then
+        stop_spinner()
+        spin_idx = 1
+        lualine_refresh()
+        return
+      end
+      spin_idx = (spin_idx % #SPINNER) + 1
+      lualine_refresh()
+    end)
+  )
 end
 
 local function timestamp()
@@ -176,6 +211,10 @@ local function finish(session, status, detail)
   end
   if session.on_done then
     pcall(session.on_done, session)
+  end
+  if #active_sessions() == 0 then
+    stop_spinner()
+    spin_idx = 1
   end
   lualine_refresh()
 end
@@ -399,6 +438,7 @@ function M.ask(opts)
   local short = message:gsub("%s+", " "):sub(1, 80)
   log(string.format("▶ %s — %s", session.model_desc, short))
   lualine_refresh()
+  ensure_spinner()
 
   local payload = vim.json.encode { type = "prompt", message = message } .. "\n"
   local cmd = opts.cmd or build_cmd()
@@ -506,8 +546,9 @@ function M.active_count()
   return #active_sessions()
 end
 
---- Empty string when idle, else a compact busy indicator for lualine:
---- "✦ ⧗" (thinking), "✦ bash" (tool), "✦2 bash,edit" (parallel runs).
+--- Empty string when idle, else a busy indicator for lualine with an
+--- animated spinner: "✦ ⠋" (working), "✦ ⠋ bash" (tool), "✦2 ⠋ bash,edit"
+--- (parallel runs). The frames swap while a spinner timer is active.
 function M.busy_component()
   local active = active_sessions()
   if #active == 0 then
@@ -521,11 +562,11 @@ function M.busy_component()
       tools[#tools + 1] = tool
     end
   end
-  local prefix = #active > 1 and ("✦" .. #active) or "✦"
+  local parts = { #active > 1 and ("✦" .. #active) or "✦", SPINNER[spin_idx] or SPINNER[1] }
   if #tools > 0 then
-    return string.format("%s %s", prefix, table.concat(tools, ","))
+    parts[#parts + 1] = table.concat(tools, ",")
   end
-  return prefix .. " ⧗"
+  return table.concat(parts, " ")
 end
 
 --- Open (or focus) the rolling session log buffer.
