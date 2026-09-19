@@ -1,0 +1,22 @@
+repository: serhii/dotfiles
+commit: b603ce234e7027b934aa85222442deb8e186fcf7
+date: 2026-09-19T22:22:36+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(nvim): non-blocking pi runner with parallel requests + status bar
+Replace the pi.nvim plugin with a self-contained pi_agent runner:
+one `pi --mode rpc --no-extensions` job per request, so multiple
+requests run concurrently and nothing ever overlays the buffer.
+Agent progress is shown in lualine (busy indicator with active tool
+name) and via transient vim.notify messages (done/error/cancelled,
+with a preview of the final reply); :PiLog opens a rolling session
+log. Extensions are disabled because the agent runs non-interactively
+and some extensions block waiting for input. The model picker
+(:PiModel) is unchanged.
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
