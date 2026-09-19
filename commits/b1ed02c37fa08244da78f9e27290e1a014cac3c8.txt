@@ -1,0 +1,18 @@
+repository: serhii/dotfiles
+commit: b1ed02c37fa08244da78f9e27290e1a014cac3c8
+date: 2026-09-19T22:01:49+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(nvim): pi model list read from ~/.pi/agent/models.json at runtime
+Replace the hardcoded model entries with a dynamic registry backed by
+pi's own models.json: the picker re-reads it on every open, shows all
+77 current models (local llama.cpp first, then freellmapi), persists
+the active provider/model across restarts, and falls back gracefully
+when the registry is unreadable.
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
