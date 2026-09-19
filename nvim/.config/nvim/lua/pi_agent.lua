@@ -112,6 +112,75 @@ local function truncate(text, max_bytes)
   return text:sub(1, max_bytes), true
 end
 
+local function buffer_is_file_backed(bufnr)
+  return vim.bo[bufnr].buftype == "" and vim.api.nvim_buf_get_name(bufnr) ~= ""
+end
+
+--- Disk signature of a file, or nil if it does not exist.
+local function file_signature(path)
+  local stat = vim.loop.fs_stat(path)
+  if not stat or stat.type ~= "file" then
+    return nil
+  end
+  local mt = stat.mtime
+  return { size = stat.size, mtime_sec = mt and mt.sec or 0, mtime_nsec = mt and mt.nsec or 0 }
+end
+
+--- Snapshot disk signatures of every loaded file-backed buffer.
+local function snapshot_files()
+  local snap = {}
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(bufnr) and buffer_is_file_backed(bufnr) then
+      local path = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":p")
+      snap[path] = file_signature(path)
+    end
+  end
+  return snap
+end
+
+--- Reload one buffer from disk, preserving the window view.
+--- A buffer with unsaved local changes is left alone (warned about).
+local function reload_buffer(bufnr, path)
+  if vim.bo[bufnr].modified then
+    vim.notify(
+      "pi: file changed on disk but buffer has unsaved changes: " .. vim.fn.fnamemodify(path, ":t"),
+      vim.log.levels.WARN
+    )
+    return false
+  end
+  local ok = pcall(function()
+    vim.api.nvim_buf_call(bufnr, function()
+      local view = vim.api.nvim_get_current_buf() == bufnr and vim.fn.winsaveview() or nil
+      vim.cmd "silent edit!"
+      if view then
+        vim.fn.winrestview(view)
+      end
+    end)
+  end)
+  if ok then
+    log("↻ reloaded " .. vim.fn.fnamemodify(path, ":t"))
+  end
+  return ok
+end
+
+--- Reload every loaded buffer whose file changed on disk since the
+--- snapshot taken before the request started.
+local function reload_changed(snapshot)
+  for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(bufnr) and buffer_is_file_backed(bufnr) then
+      local path = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":p")
+      local before, after = snapshot[path], file_signature(path)
+      if
+        before
+        and after
+        and (before.size ~= after.size or before.mtime_sec ~= after.mtime_sec or before.mtime_nsec ~= after.mtime_nsec)
+      then
+        reload_buffer(bufnr, path)
+      end
+    end
+  end
+end
+
 --- Build the pi command for the currently selected model.
 local function build_cmd()
   local entry = require("pi_models").entry()
@@ -201,6 +270,9 @@ local function finish(session, status, detail)
     else
       vim.notify("pi: done (" .. duration .. ")", vim.log.levels.INFO, { title = "pi done" })
     end
+    if session.file_snapshot then
+      reload_changed(session.file_snapshot)
+    end
   elseif status == "cancelled" then
     log(string.format("✕ cancelled %s", session.model_desc))
     vim.notify("pi: cancelled", vim.log.levels.WARN, { title = "pi cancelled" })
@@ -280,10 +352,6 @@ local function buffer_is_empty(bufnr)
     end
   end
   return true
-end
-
-local function buffer_is_file_backed(bufnr)
-  return vim.bo[bufnr].buftype == "" and vim.api.nvim_buf_get_name(bufnr) ~= ""
 end
 
 local SEVERITY = { [1] = "ERROR", [2] = "WARN", [3] = "INFO", [4] = "HINT" }
@@ -424,6 +492,7 @@ function M.ask(opts)
     message = message,
     model_desc = entry.provider and (entry.provider .. "/" .. entry.model) or "pi default",
     source_path = vim.api.nvim_buf_get_name(bufnr),
+    file_snapshot = snapshot_files(),
     tail = "",
     last_text = nil,
     active_tool = nil,
