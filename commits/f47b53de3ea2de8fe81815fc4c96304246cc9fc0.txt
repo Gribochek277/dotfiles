@@ -1,0 +1,18 @@
+repository: serhii/dotfiles
+commit: f47b53de3ea2de8fe81815fc4c96304246cc9fc0
+date: 2026-09-20T01:54:09+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+fix(nvim): reload buffers changed on disk when pi finishes
+Snapshot file signatures of loaded file-backed buffers before each
+request and re-read any buffer whose file changed on disk once the
+request completes, so agent edits are visible without reopening the
+file. Buffers with unsaved local changes are left untouched and the
+user is warned instead of silently clobbering their edits.
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
