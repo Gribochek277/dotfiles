@@ -258,5 +258,7 @@ wk.add {
     desc = "[M]odel picker",
   },
   { "<leader>ac", "<cmd>PiCancel<CR>", desc = "[C]ancel all requests" },
+  { "<leader>at", "<cmd>PiConnect<CR>", desc = "[T]alk to pi agent" },
+  { "<leader>ar", ":PiRef<CR>", desc = "[R]eference lines → agent", mode = { "x" } },
   { "<leader>al", "<cmd>PiLog<CR>", desc = "[L]og" },
 }

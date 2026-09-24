@@ -15,11 +15,17 @@ Personal dotfiles managed by [GNU Stow](https://www.gnu.org/software/stow/). Eac
 ├── waybar/        → ~/.config/waybar/     (Waybar status bar)
 ├── kitty/         → ~/.config/kitty/      (Kitty terminal)
 ├── WallRizz/      → ~/.config/WallRizz/   (WallRizz wallpaper & theme manager)
+├── pi/            → ~/.pi/                (pi agent extensions, see note below)
 ├── tlp/           → ~/etc/tlp.d/          (TLP power profiles)
 ├── README.md
 ├── AGENTS.md
 └── .git/
 ```
+
+**Note on `pi/`:** the repo's root `.gitignore` ignores `.pi/` (agent runtime data), so the
+`pi/` target lives as `pi/.pi/agent/extensions/` and is force-added (`git add -f`). It is
+stowed as a single symlink `~/.pi/agent/extensions/pi-name.ts` → the repo file (not the whole
+dir), so other `~/.pi/agent/extensions/` entries stay untouched.
 
 ## Remotes
 
@@ -53,6 +59,7 @@ Push to both with `git pushboth` (git alias → `git push --all origin && git pu
   - `lua/plugins/` — per-plugin config modules (blink, colorscheme, fzf-lua, hop, themes, vim-navigator)
   - `lua/` — mappings, options, autocmds, localized_keymaps, pi_agent, pi_models, theme
 - **Pi integration:** self-contained runner (`lua/pi_agent.lua`) spawns one `pi --mode rpc` job per request (`--no-extensions`, non-interactive); progress lives in lualine (`busy_component`) + vim.notify, never in a window over the buffer. Multiple requests run concurrently. `lua/pi_models.lua` provides the model picker (`:PiModel`) by querying `pi --list-models` at runtime, backed by `~/.pi/agent/models.json` as fallback.
+- **Pi connector:** `lua/pi_name.lua` attaches Neovim to a *running* named pi agent (a TUI instance started with the `pi-name` extension, see the `pi/` target). `<leader>at` (`:PiConnect`) discovers instances via `~/.pi/agent/pi-name/<name>.sock` (unix socket, JSONL), or spawns one in a new ghostty window (`PI_NAME=nvim-N exec pi`, ghostty config keys need the `--key=value` CLI form). While connected, `<leader>ai`/selection-ask route to the agent (`pi.sendUserMessage` via the bridge; busy agents get `deliverAs: followUp`), `<leader>ar` (x) sends a Copilot-style line reference, `<leader>ac` also aborts the agent's turn. Lualine shows `π@name` (⏳ while the agent works). No chat window — the pi TUI is the chat surface.
 - **Theming:** `flow` is the fallback colorscheme; extra themes (tokyonight, catppuccin, gruvbox, rose-pine) in `lua/plugins/themes.lua` are set up but never auto-applied. `lua/theme.lua` restores the last picked theme from `stdpath("state")/nvim-theme.last` at startup (falls back to flow); `<leader>uc` opens the fzf-lua colorschemes picker.
 - **Language:** Lua, formatted with [StyLua](https://github.com/JohnnyMorganz/StyLua)
 - **StyLua config:** `nvim/.config/nvim/.stylua.toml` (2-space indent, 120-col width, double quotes, no call parens)
@@ -84,6 +91,18 @@ Push to both with `git pushboth` (git alias → `git push --all origin && git pu
 - **Exclude from tracking:** runtime dirs `.pi/` and `themeExtensionScripts/.opencode/` (see `WallRizz/.config/WallRizz/.gitignore`)
 - **Cache:** generated themes live in `~/.cache/WallRizz/` (not tracked)
 - **Generated outputs:** themes are written into other targets at runtime (e.g. `hypr/wallrizHyprConfig.conf`, `waybar/theme.css`, `kitty/current-theme.conf`) — tracked but regenerated on every wallpaper change
+
+### `pi/` — pi agent extensions
+
+- **Target:** `~/.pi/` (pi agent config dir; only `agent/extensions/` is tracked here)
+- **Force-add:** the repo root `.gitignore` ignores `.pi/` (agent runtime data). Track extension files with `git add -f pi/.pi/...`
+- **Stow:** `stow pi` symlinks the leaf file(s) into the existing `~/.pi/agent/extensions/` dir (intermediate dirs are real, not symlinked)
+- **`pi-name.ts`** — names a running pi instance and exposes it to Neovim:
+  - Resolves a name from `--pi-name <n>` → `$PI_NAME` → `basename(cwd)`, sets it as the session name (`pi.setSessionName`)
+  - In TUI mode only, runs a unix-socket JSONL server at `~/.pi/agent/pi-name/<sanitized-name>.sock` (one client at a time); unlinks the socket on `session_shutdown`
+  - Protocol (one JSON object per line): client → `{cmd:"hello"}`, `{cmd:"prompt",message,deliverAs?}`, `{cmd:"abort"}`, `{cmd:"close"}`; server → `{type:"hello",name,cwd,model,busy,sessionName}`, `{type:"response"}`, `{type:"error"}`, and compact forwarded agent events (`agent_start`, `agent_end`, `message_start/update/end`, `tool_execution_start/end`)
+  - The server never blocks the TUI: prompts go through `pi.sendUserMessage` (`deliverAs` defaults to steering; Neovim sends `followUp` while the agent is busy)
+- **Language:** TypeScript (esbuild-compiled by pi at load time, no build step in the repo)
 
 ### `tlp/` — Power Management
 

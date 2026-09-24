@@ -190,6 +190,9 @@ return {
           function()
             return require("pi_agent").busy_component()
           end,
+          function()
+            return require("pi_name").component()
+          end,
           "encoding",
           "fileformat",
           "filetype",

@@ -566,9 +566,37 @@ function M.ask(opts)
   end
 end
 
+--- Send a message to the connected agent with optional context.
+local function send_connected(bufnr, range, message)
+  local pi_name = require "pi_name"
+  local info = pi_name.active()
+  if not info then
+    return false
+  end
+  local context = ""
+  if buffer_is_file_backed(bufnr) then
+    context = range and selection_context(bufnr, range) or buffer_context(bufnr)
+  end
+  if context ~= "" then
+    message = message .. "\n\nContext:\n" .. context
+  end
+  pi_name.send_message(message)
+  return true
+end
+
 --- Prompt for a request with the current buffer as context.
+--- With a connected agent the request goes to it (shared context).
 function M.ask_buffer()
   local bufnr = vim.api.nvim_get_current_buf()
+  local pi_name = require "pi_name"
+  if pi_name.active() then
+    vim.ui.input({ prompt = "pi @" .. pi_name.active().name .. ": " }, function(input)
+      if input and input ~= "" then
+        send_connected(bufnr, nil, input)
+      end
+    end)
+    return
+  end
   if not buffer_is_file_backed(bufnr) then
     vim.notify("pi: requires a file buffer", vim.log.levels.ERROR)
     return
@@ -583,6 +611,18 @@ end
 --- Prompt for a request with the current visual selection as context.
 function M.ask_selection()
   local bufnr = vim.api.nvim_get_current_buf()
+  local pi_name = require "pi_name"
+  if pi_name.active() then
+    local range = visual_range()
+    local file = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(bufnr), ":t")
+    local label = string.format("%s:%d-%d", file ~= "" and file or "buffer", range.start, range["end"])
+    vim.ui.input({ prompt = "pi @" .. pi_name.active().name .. " — " .. label .. ": " }, function(input)
+      if input and input ~= "" then
+        send_connected(bufnr, range, input)
+      end
+    end)
+    return
+  end
   if not buffer_is_file_backed(bufnr) then
     vim.notify("pi: requires a file buffer", vim.log.levels.ERROR)
     return
@@ -595,18 +635,66 @@ function M.ask_selection()
   end)
 end
 
---- Cancel every running request.
-function M.cancel_all()
-  local active = active_sessions()
-  if #active == 0 then
-    vim.notify("pi: nothing running", vim.log.levels.INFO)
+--- Send a Copilot-style line reference of the visual selection to the
+--- connected agent: the agent gets the file name, line range and the
+--- exact lines (fresh from disk/buffer at send time).
+function M.ref_selection()
+  local pi_name = require "pi_name"
+  local info = pi_name.active()
+  if not info then
+    vim.notify("pi: no agent connected (<leader>at)", vim.log.levels.WARN)
     return
   end
+  local bufnr = vim.api.nvim_get_current_buf()
+  if not buffer_is_file_backed(bufnr) then
+    vim.notify("pi: requires a file buffer", vim.log.levels.ERROR)
+    return
+  end
+  local range = visual_range()
+  local path = vim.api.nvim_buf_get_name(bufnr)
+  local label = string.format("%s:%d-%d", vim.fn.fnamemodify(path, ":~"), range.start, range["end"])
+  vim.ui.input({ prompt = "pi @" .. info.name .. " — " .. label .. " (Enter = no comment): " }, function(input)
+    if input == nil then
+      return
+    end
+    M.send_reference(info, path, range.start, range["end"], input)
+  end)
+end
+
+--- Compose and send a line reference. Split out for testability.
+function M.send_reference(info, path, start_line, end_line, comment)
+  local pi_name = require "pi_name"
+  local bufnr = vim.fn.bufnr(vim.fn.fnamemodify(path, ":p"))
+  local lines
+  if bufnr ~= -1 and vim.api.nvim_buf_is_loaded(bufnr) then
+    lines = vim.api.nvim_buf_get_lines(bufnr, start_line - 1, end_line, false)
+  else
+    lines = vim.fn.readfile(path, "", start_line - 1, end_line)
+  end
+  local label = string.format("Reference: %s (lines %d-%d)", vim.fn.fnamemodify(path, ":~"), start_line, end_line)
+  local block = block(label, table.concat(lines, "\n"))
+  local message = comment and comment ~= "" and (comment .. "\n\n" .. block) or block
+  pi_name.send_message(message)
+end
+
+--- Cancel every running request (and abort the connected agent's turn).
+function M.cancel_all()
+  local pi_name = require "pi_name"
+  local active = active_sessions()
+  local did = false
   for _, session in ipairs(active) do
     if session.process and not session.process:is_closing() then
       pcall(session.process.kill, session.process, 15)
     end
     finish(session, "cancelled")
+    did = true
+  end
+  if pi_name.active() then
+    pi_name.abort()
+    did = true
+  end
+  if not did then
+    vim.notify("pi: nothing running", vim.log.levels.INFO)
   end
 end
 
@@ -614,6 +702,9 @@ end
 function M.active_count()
   return #active_sessions()
 end
+
+--- Append a line to the rolling session log (used by pi_name).
+M.append_log = log
 
 --- Empty string when idle, else a busy indicator for lualine with an
 --- animated spinner: "✦ ⠋" (working), "✦ ⠋ bash" (tool), "✦2 ⠋ bash,edit"
