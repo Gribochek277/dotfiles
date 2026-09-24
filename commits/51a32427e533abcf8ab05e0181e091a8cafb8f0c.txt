@@ -1,0 +1,28 @@
+repository: serhii/dotfiles
+commit: 51a32427e533abcf8ab05e0181e091a8cafb8f0c
+date: 2026-09-24T04:25:54+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(pi): pi-name extension + <leader>at connector to named pi agents
+pi/ (new stow target, force-added past the .pi/ gitignore):
+- pi-name.ts names a running TUI instance (--pi-name > $PI_NAME >
+  basename(cwd)), sets the session name, and serves a unix-socket JSONL
+  bridge at ~/.pi/agent/pi-name/<name>.sock (TUI mode only, one client,
+  unlinked on session_shutdown)
+
+nvim:
+- pi_name.lua: discover/connect to running instances, send prompts
+  (followUp while the agent is busy), abort, auto-spawn in a ghostty
+  window (PI_NAME=nvim-N, --key=value config form), EOF-aware
+  disconnect, lualine 'π@name ⏳' component
+- pi_agent.lua: ask/ask_selection route to the connected agent;
+  new ref_selection (Copilot-style line references); cancel_all also
+  aborts the agent; append_log exposed to pi_name
+- :PiConnect (leader-at), :PiAgents, :PiRef (leader-ar, x-mode)
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
