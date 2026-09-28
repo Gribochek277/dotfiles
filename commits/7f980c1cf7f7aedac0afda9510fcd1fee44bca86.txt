@@ -1,0 +1,29 @@
+repository: serhii/dotfiles
+commit: 7f980c1cf7f7aedac0afda9510fcd1fee44bca86
+date: 2026-09-28T21:47:33+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+fix(nvim): run pi_name protocol handling in the main loop (E5560)
+libuv callbacks are a 'fast event context': vim.notify (default handler ->
+nvim_echo), the :PiLog buffer update and lualine.refresh all raise
+E5560 there. handle_line() did all three, so connecting to an agent
+failed with:
+
+  E5560: nvim_echo must not be called in a fast event context
+  pi_name.lua:56 in handle_line
+
+Schedule every libuv entry point instead:
+- read_loop returns a vim.schedule_wrap'ed callback (chunk order kept)
+- the connect callback and the spawn poll timer are scheduled too
+
+pi_agent/pi_models already scheduled their vim.system callbacks, so only
+pi_name was affected. Covered by a regression test that runs the whole
+connect/prompt/abort flow with the real vim.notify and asserts v:errmsg
+stays empty (it reproduces the exact traceback on the pre-fix version).
+
+---
+Source code is NOT published on GitHub.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
