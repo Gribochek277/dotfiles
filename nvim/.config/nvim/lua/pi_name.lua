@@ -102,8 +102,14 @@ local function handle_line(c, obj)
   end
 end
 
+--- Build the read callback for a connection.
+---
+--- The protocol handling below calls vim.notify, appends to the log buffer and
+--- refreshes lualine — none of which is allowed in a libuv callback (a "fast
+--- event context": nvim_echo raises E5560 there). Scheduling every chunk moves
+--- the work into the main loop; the order of the chunks is preserved.
 local function read_loop(c)
-  return function(_, data)
+  local function on_data(_, data)
     if conn ~= c then
       return
     end
@@ -137,6 +143,7 @@ local function read_loop(c)
       ::continue::
     end
   end
+  return vim.schedule_wrap(on_data)
 end
 
 --- Handshake an instance; returns its info or nil (dead / timeout / error).
@@ -235,18 +242,23 @@ function M.connect(path)
   local handle = vim.uv.new_pipe()
   local c = { handle = handle, buf = "", info = nil, busy = false, hello_done = false, queue = {}, last_text = nil }
   conn = c
-  pcall(handle.connect, handle, path, function(err)
-    if err then
-      if conn == c then
-        conn = nil
+  pcall(
+    handle.connect,
+    handle,
+    path,
+    vim.schedule_wrap(function(err)
+      if err then
+        if conn == c then
+          conn = nil
+        end
+        vim.notify("pi: cannot connect: " .. tostring(err), vim.log.levels.ERROR, { title = "pi connect" })
+        lualine_refresh()
+        return
       end
-      vim.notify("pi: cannot connect: " .. tostring(err), vim.log.levels.ERROR, { title = "pi connect" })
-      lualine_refresh()
-      return
-    end
-    handle:read_start(read_loop(c))
-    handle:write(vim.json.encode { cmd = "hello" } .. "\n", nil)
-  end)
+      handle:read_start(read_loop(c))
+      handle:write(vim.json.encode { cmd = "hello" } .. "\n", nil)
+    end)
+  )
   return true
 end
 
@@ -373,10 +385,14 @@ function M.spawn()
       return
     end
     local timer = vim.uv.new_timer()
-    timer:start(SPAWN_POLL_MS, 0, function()
-      timer:close()
-      poll()
-    end)
+    timer:start(
+      SPAWN_POLL_MS,
+      0,
+      vim.schedule_wrap(function()
+        timer:close()
+        poll()
+      end)
+    )
   end
   poll()
 end
