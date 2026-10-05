@@ -1,0 +1,20 @@
+repository: serhii/dotfiles
+commit: 6b55ff2e6fb6f5eca979ff1a08949524a7324a09
+date: 2026-10-05T05:08:18+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+fix(hypr): make shader switching idempotent and debounce the reload watcher
+Hyprland destroys and recreates the screen shader program on every hl.config
+call, even when the value is unchanged, so re-applying the active shader (which
+the reload watcher did on every configreloaded) caused needless shader churn.
+do_set now returns early when the target shader is already active (no
+glslangValidator run, no grim check), and the watcher coalesces a burst of
+reload events into at most one restore every 2 seconds.
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
