@@ -1,0 +1,31 @@
+repository: serhii/dotfiles
+commit: b6d180053fee9d96624283a3c41e71428b07f86c
+date: 2026-10-05T04:57:57+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(hypr): screen shader switcher (43 shaders + apply/menu/status/watch)
+The 90 files in hypr/shaders were symlinks into /usr/share/aether/shaders,
+which does not exist any more (aether 4.32 ships no shaders) — so the repo
+carried 90 dead entries and the system had no usable shader at all.
+
+Replace them with 43 working GLSL screen shaders (static, no `time`
+uniform, so they do not need debug:damage_tracking=0) and add the plumbing:
+
+- scripts/shader-apply.sh — apply / reset / restore / current / toggle.
+  Applies through `hyprctl eval` because `hyprctl keyword` refuses to work
+  with the Lua config manager. Guards: glslangValidator rejects invalid GLSL
+  before anything is applied, and after applying it looks for Hyprland's red
+  error overlay and rolls back (plus dismisses the overlay) if it appeared.
+- scripts/shader-menu.sh — rofi menu, first entry turns shaders off.
+- scripts/shader-status.sh — waybar custom module (palette icon, off/on).
+- scripts/shader-watch.sh — re-applies the saved shader on `configreloaded`,
+  since a runtime screen_shader does not survive `hyprctl reload` and aether
+  reloads Hyprland on every theme change.
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com

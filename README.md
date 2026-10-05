@@ -1,7 +1,7 @@
 > Sanitized mirror of Forgejo `serhii/dotfiles`. Source code is not published here.
 >
 > Commit texts: `commits/`. Need the code? Email: sergeyalpatov1@gmail.com
-> Source: Forgejo `serhii/dotfiles` | Synced: 2026-10-05T01:38:19Z
+> Source: Forgejo `serhii/dotfiles` | Synced: 2026-10-07T03:01:15Z
 
 ---
 
@@ -50,6 +50,8 @@ Each top-level directory is a Stow target that symlinks into `~/.config/`:
 | `kitty/` | Kitty terminal emulator |
 | `WallRizz/` | WallRizz wallpaper & system theme manager |
 | `tlp/` | TLP power management |
+| `silo/` | Silo SMB share — CLI, PAM snippet, privileged helpers, systemd units |
+| `aether/` | Aether theme templates (`~/.config/aether/custom/`, mako) |
 
 ## WallRizz (wallpaper & system theme manager)
 
