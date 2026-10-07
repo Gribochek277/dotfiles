@@ -1,0 +1,30 @@
+repository: serhii/dotfiles
+commit: f35f12edd78a74e8fc79f872ef06ce4c713c4426
+date: 2026-10-07T06:43:36+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(pi): ask before running sudo commands
+pi-sudo now shows what will run as root before it runs: a tool_call hook on
+bash commands with `sudo` in command position opens pi's built-in Yes/No
+confirmation (ctx.ui.confirm, ctx.signal passed so Esc/Ctrl+C dismisses it).
+A denial blocks the call with "sudo command was not approved by the user";
+approval keeps the existing flow (desktop + TUI hint, then sudo with the
+fingerprint and the rofi askpass as fallback).
+
+The fingerprint proves who runs a command, not what runs, hence the dialog.
+Modes without a UI (print/json) skip it and keep authentication as the gate.
+Long commands are truncated to 15 lines / 1200 chars for the dialog.
+
+Detection is deliberately loose — line starts, shell separators, `$(` and
+keywords like if/then/time/xargs — because a false positive only costs one
+dialog while a false negative would run root commands unshown. Covered by a
+standalone jiti harness: 10 positive and 6 negative command shapes, deny,
+approve, no-UI and truncation paths.
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
