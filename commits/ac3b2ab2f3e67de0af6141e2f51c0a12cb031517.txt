@@ -1,0 +1,39 @@
+repository: serhii/dotfiles
+commit: ac3b2ab2f3e67de0af6141e2f51c0a12cb031517
+date: 2026-10-07T05:36:23+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(silo): rofi menu, 4-state indicator, failure guard, sudo askpass
+Silo (new stow target, ~/.config/silo):
+- siloctl is the single entry point (state/auto-state/json/status/connect/
+  reconnect/disconnect/auto-on/auto-off/open/reachable), also symlinked as
+  ~/.local/bin/siloctl
+- state comes from /proc/mounts + unit states, never from `mountpoint -q`
+  on the autofs watchpoint (which always reports "mounted" and triggers a
+  mount attempt just by looking at it)
+- silo-guard: OnFailure/OnSuccess watchdog on home-serhii-Silo.mount that
+  disables the automount after 3 consecutive failures, so a dead NAS stops
+  being hammered by gvfsd-recent; counter lives in /run
+- privileged verbs via sudo: plain in a terminal, `sudo -A` from waybar/rofi.
+  Fingerprint first (pam_fprintd in /etc/pam.d/sudo), themed rofi askpass as
+  the fallback, with a notification hint while PAM waits for the sensor
+- install-root.sh installs both helpers, the guard units, the mount drop-in
+  and /etc/pam.d/polkit-1 (fingerprint for the remaining polkit dialogs)
+
+waybar custom/silo:
+- 4 states connected/auto/failed/off with distinct colors
+- left click opens the rofi menu, right click toggles connect/disconnect
+- signal 31 for refreshes, interval 5s
+
+aether (new stow target, ~/.config/aether/custom):
+- mako template: notifications follow the active palette (accent border,
+  red + sticky for critical) instead of the hand-written Dracula config
+- stow --no-folding: Aether skips symlinked directories in custom/
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
