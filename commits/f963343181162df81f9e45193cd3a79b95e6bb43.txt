@@ -1,0 +1,31 @@
+repository: serhii/dotfiles
+commit: f963343181162df81f9e45193cd3a79b95e6bb43
+date: 2026-10-07T05:59:12+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(pi): pi-sudo — sudo from the bash tool via fingerprint/rofi askpass
+pi spawns bash detached without a tty, so `sudo` cannot prompt and fails with
+"a password is required". sudo falls back to the askpass helper when no
+terminal is available, so the extension writes a themed rofi askpass script to
+$XDG_RUNTIME_DIR/pi-sudo/ (0700, tmpfs) and exports SUDO_ASKPASS through
+process.env — the bash tool reads the environment live via getShellEnv(), so
+the model's command is never rewritten and no shadow `sudo` lands in PATH.
+
+PAM runs first: the fingerprint authenticates with no window at all
+(pam_fprintd is in /etc/pam.d/sudo) and rofi only appears when the sensor does
+not answer. Nothing reads, caches or writes a password — the credential stays
+inside PAM/fprintd; each command authenticates again (without a tty sudo binds
+timestamp tickets to the parent pid), one touch per command.
+
+A tool_call hook on bash commands with `sudo` in command position posts a
+desktop + TUI hint, since the sensor prompt is otherwise invisible.
+
+Replaces the password-prompting pi-sudo.ts / sudo-askpass.ts drafts.
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
