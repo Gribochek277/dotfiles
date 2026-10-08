@@ -1,0 +1,29 @@
+repository: serhii/dotfiles
+commit: 42483fbfda4d51031e576b02c84d5d1155cebac9
+date: 2026-10-09T02:14:54+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(aether): theme GTK4/GTK3 from the palette
+GTK was not part of the theme pipeline at all, and libadwaita ignores both
+gtk-theme-name and gtk-application-prefer-dark-theme: it takes light/dark from
+org.gnome.desktop.interface color-scheme, which nothing owned. A stale
+prefer-light (left by nwg-look's "Color scheme" dropdown) therefore rendered
+Nautilus white on a dark desktop, and xdg-desktop-portal reported the same value
+to Chromium/Electron "follow system theme", so Brave saw a light system.
+
+gtk4/gtk.css overrides the palette for GTK4/libadwaita apps in both dialects
+(:root custom properties + @define-color); gtk3/gtk.css does the same for GTK3
+on top of adw-gtk3. gtk4/post-apply.sh derives color-scheme from the palette
+mode on every apply and switches remember-recent-files off (Nautilus shows its
+Recent place only while GtkSettings' gtk-recent-files-enabled is true, and
+settings.ini cannot override that mapped property); gtk3/post-apply.sh syncs
+gtk-application-prefer-dark-theme in ~/.config/gtk-3.0/settings.ini, which wins
+over gsettings for GTK3's dark variant.
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
