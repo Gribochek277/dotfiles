@@ -1,0 +1,29 @@
+repository: serhii/dotfiles
+commit: a83f7a9c5cd5b84d311a218193bdf406b3ad34b4
+date: 2026-10-08T06:48:19+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(silo): detach the NAS share around sleep and restore it
+A live CIFS mount wedges suspend: once the network is down for sleep the
+NAS is unreachable, and the kernel's pre-suspend filesystem sync
+(pm_fs_sync -> ksys_sync -> sync_inodes_sb) blocks forever on the CIFS
+writeback. The machine then neither sleeps nor wakes and has to be
+hard-powered off (the 2026-10-08 suspend in the journal).
+
+silo-sleep.service (Before=sleep.target, StopWhenUnneeded=yes) drives
+root/silo-sleep:
+
+  pre  - if ~/Silo is mounted, record it in /run and umount -l -f it;
+  post - only if it was mounted before sleep, start the mount unit again.
+
+umount -l detaches without contacting the server, so a dead NAS cannot
+hang the hook. A share that was disconnected stays disconnected on
+resume. install-root.sh installs the helper and enables the unit.
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
