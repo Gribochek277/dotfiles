@@ -1,0 +1,31 @@
+repository: serhii/dotfiles
+commit: 7a04848acf8d95b3d55f65040c90a232faea24c1
+date: 2026-10-08T06:32:32+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+fix(pi): pi-sudo forces authentication for NOPASSWD commands
+Approved commands are rewritten to run behind a forced-auth gate:
+
+    sudo -k && sudo -A -v </dev/null && { <original command> }
+
+The ticket is bound to the session and pi runs every bash call in a
+fresh session, so an auth step issued by the extension itself would not
+be reused by the command — the user would authenticate twice. Prepending
+the gate inside the command's own shell also covers NOPASSWD allow-list
+entries (cat, tar, tee, …), which skip PAM entirely and previously ran
+with no finger or password at all.
+
+The model's transcript is unaffected: the tool_call hook receives a
+structuredClone of the arguments, so the rewrite only reaches execution.
+
+Adds a toggle. --no-sudo or PI_SUDO=off disables the extension,
+PI_SUDO=on forces it on, and the default auto keeps it on only when a UI
+is present, so headless runs leave root authentication untouched.
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
