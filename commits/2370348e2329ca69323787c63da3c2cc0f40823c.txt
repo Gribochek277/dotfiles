@@ -1,0 +1,36 @@
+repository: serhii/dotfiles
+commit: 2370348e2329ca69323787c63da3c2cc0f40823c
+date: 2026-10-09T04:40:57+03:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(aether): theme Qt/KDE apps (Kate editor theme, KDE colour scheme)
+Qt has no colour scheme of its own: with no platform theme it falls back to its
+built-in light palette, and kdeglobals is only honoured with plasma-integration
+(not installed). That is why Kate opened light on this dark desktop, and why
+qt6ct — which is installed — was no help: it refuses to apply palettes at all.
+
+hypr/config/environment.lua now exports QT_QPA_PLATFORMTHEME=gtk3, so Qt and KDE
+apps take their palette from the GTK3 theme Aether already generates. Measured
+for a Qt6 app: window #261e21, text #ffeaea, highlight #94758e — the Aether
+palette.
+
+kde/ names the scheme ([General] ColorScheme=Aether) and rewrites the inline
+[Colors:*] groups of ~/.config/kdeglobals from the rendered scheme: those groups,
+not the scheme name, are what KColorScheme paints KDE chrome with
+(plasma-apply-colorscheme does the same, but ships with plasma-workspace).
+
+kate/ ships a KSyntaxHighlighting theme rendered from the palette (hues follow
+the ANSI slots so editor and terminal agree, selection = accent like kitty) and
+pins it in katerc, switching Auto Color Theme Selection off — with it on, Kate
+substitutes Breeze Light/Dark instead.
+
+The four post-apply scripts now append a dated status line to
+theme-engine/<app>-post-apply.log, the per-app log the herdr/sddm scripts use.
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
