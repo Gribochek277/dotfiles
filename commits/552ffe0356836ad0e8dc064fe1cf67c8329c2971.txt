@@ -1,0 +1,30 @@
+repository: serhii/dotfiles
+commit: 552ffe0356836ad0e8dc064fe1cf67c8329c2971
+date: 2026-11-20T06:44:33+02:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+fix(pi): pi-sudo — тише гейт, меньше ложных и лишних запросов root
+- sudo в heredoc'ах, '…' и "…" (без подстановок) больше не считается
+  командой: grep -E "sudo|pkexec" и документация про sudo не дёргают
+  ни диалог, ни отпечаток. bash -c 'sudo …' и eval проверяются отдельно,
+  чтобы гейт не потерялся.
+- sudo -l/-V/-k/-h/--help ничего не запускают от root — без гейта.
+- Гейт пишет stderr в mktemp: на успехе PAM-болтовня («Place your
+  finger…», «Failed to match fingerprint», «Sorry, try again.») не
+  попадает в вывод инструмента, на провале остаётся причина + одна
+  строка «authentication failed or was cancelled» и exit 77, чтобы
+  «пользователь не подтвердил» не путать с «команда упала».
+- flock по fd вокруг sudo -k/-v: параллельные tool-вызовы не дерутся
+  за сенсор (device busy → rofi).
+- timeout поднимается до 180 с, если модель его задала: PAM stack
+  ждёт до 3×30 с ещё до появления rofi.
+- SUDO_ASKPASS удаляется только если его ставили мы — headless-сессия
+  больше не выдёргивает переменную из общего процесса.
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
