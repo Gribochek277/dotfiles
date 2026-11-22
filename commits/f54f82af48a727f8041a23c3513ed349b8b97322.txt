@@ -1,0 +1,97 @@
+repository: serhii/dotfiles
+commit: f54f82af48a727f8041a23c3513ed349b8b97322
+date: 2026-11-22T22:54:01+02:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat: слой питания и простой, индикаторы LLM, раскладки и редактор
+Срез работы по десктопу: новый stow-таргет power/, переписанная статус-панель
+с двумя движками в баре, scrolling-раскладка Hyprland и обвязка Neovim под
+агентов. Документация — в AGENTS.md и README.md в этом же коммите.
+
+power/ (stow только с --no-folding, см. README и powerctl doctor):
+- powerctl — единственная пользовательская точка входа: on-ac/on-battery/
+  screen-off/screen-on/lock/sleep/awake/run/inhibited/profile/status/doctor и
+  lid-closed/lid-open. Крышка гасит DPMS, если подключён только встроенный
+  экран, и отключает лишь встроенный выход, если есть внешний; решение
+  запоминается в $XDG_RUNTIME_DIR/power/lid, чтобы открытие знало, что
+  возвращать. lock сначала зажигает панель: hyprlock забирает ввод, и
+  погашенный заблокированный экран изнутри сессии уже не разбудить.
+  hypr_eval() проверяет вывод `hyprctl eval`: `hyprctl keyword` с Lua-парсером
+  печатает ошибку и всё равно выходит с 0.
+- hibernation выключен окончательно. Десять циклов с 29 октября: шесть
+  поднялись, четыре потеряли сессию — образ записан, восстановление не дожило,
+  и именно прерванный resume оставил следующую загрузку без образа. Убраны
+  resume= из записей загрузчика, systemd-hibernate с хуками и маркерами, verb
+  hibernate; logind получил AllowHibernation=no, юниты замаскированы.
+- install-root.sh — идемпотентная root-часть: /usr/local/bin/power-root,
+  power-wakeguard.service (перед сном снимает внешние USB/Thunderbolt-источники
+  пробуждения и возвращает ровно те же; состояние в /run), drop-in logind
+  (кнопка питания = выключение, крышка не его дело), копирование загрузочных
+  записей со снятым resume= и бэкапом в /var/backups/power.
+- hypridle.conf: батарея 5/7/15 (экран, замок, сон), сеть 30/40 и без сна; на
+  каждую ступень по два listener'а с противоположным condition_cmd и без
+  condition_retry. Стартует из autostart с import-environment: в сессии
+  sddm + Hyprland graphical-session.target не достигается.
+- tlp: 20-profile-switching.conf — TLP_AUTO_SWITCH=2, AC=balanced,
+  BAT=power-saver.
+
+waybar/:
+- Индикаторы LLM переписаны: общий llama-status-lib.sh (иконки, форматтеры,
+  парсеры payload'ов, текст и тултип) и два процесса-демона вместо скрипта с
+  interval. Модуль с interval заставлял waybar перезапускать команду каждый
+  тик, поэтому счётчики ездили через /tmp; теперь один долгоживущий процесс
+  держит их в переменных, печатает только изменения, а restart-interval и
+  parent-death возвращают его после сбоя.
+- Слежение за HTTP-движком стало параметризуемым (--config/--label/--prefix/
+  --open): custom/llm показывает движок на workstation (100.91.43.67:1337,
+  ключ pi:secrets.dellStrataApiKey) и пишет «workstation», когда назвать модель
+  нечем, а custom/llm_remote — nexus (llama.cpp на 8080 и strata на 1488) с тем
+  же словом «nexus» вместо «Remote». Добавлены flavor-проба strata/llamacpp/
+  none, состояние denied (401/403 отдельно от обрыва), ключи через --config-фд
+  curl, чтобы они не светились в ps, и перечитывание источника ключа на 401.
+- power-profile — непрерывный воркер поверх busctl (6 мс вместо 0.32 с у
+  tlpctl), перерисовка по SIGRTMIN+2; power_menu — нативное меню waybar
+  (GtkBuilder XML, GTK3: Shutdown, Reboot, Sleep) вместо окна rofi.
+- Новые модули strata и audiobook; tray-icons.sh + watcher красят монохромные
+  иконки трея под палитру (fill запечён в SVG, поэтому re-render нужен на
+  каждую тему), install.sh включает symbolic-иконки blueman.
+
+hypr/:
+- scrolling-раскладка (column_width 0.49) с обвязкой: toggle-layout.sh,
+  wheel-scroll.sh, toggle-aspect-ratio.sh, layout-togglesplit.sh. mainMod+колесо
+  листает колонки, mainMod+CTRL+колесо переключает воркспейсы, одиночное окно
+  держится в рамке 4:3.
+- audiobook-curtain.lua — компактный ghostty на special:audiobook (1040x560,
+  dim_around), уход фокуса прячет, Ctrl+C закрывает с сохранением.
+- Шейдеры crt/scanlines/matrix/retro-vhs: узор привязан к сетке пикселей
+  устройства и сглажен косинусом — жёсткие step()/mod() давали диагональный
+  муар при любом масштабировании.
+- monitors: 10 бит и VRR на панели ноутбука, srgb, у Dell VRR выключен;
+  hyprlock берёт тему из aether; keybinds: экран/awake/suspend и Lid Switch
+  через powerctl, вычищены привязки ImageGen, ollama, wayscriber, open-webui и
+  whisper (hypr-whisper-* удалены, отменой диктовки занимается CTRL+F10).
+- restart_waybar.sh перерисовывает tray-иконки под текущую палитру.
+
+nvim/:
+- autoreload.lua перечитывает буфер, когда файл сменили на диске: watcher на
+  каталог (агенты и форматтеры заменяют файл через rename), склеенный
+  :checktime, изменённый буфер не трогается, а W12 превращается в уведомление.
+- lua/plugins/lspconfig.lua — серверы конфигурируются из спеки nvim-lspconfig,
+  иначе lsp/*.lua не успевают попасть в rtp до первого vim.lsp.config;
+  добавлен lua_ls.
+- lua/plugins/aether.lua — colorscheme aether из отрендеренной спеки с
+  выброшенным LazyVim-энтри и запасным вариантом из colors.toml.
+- lua/plugins/writer.lua — writer.nvim. blink грузится сразу: defaults.lazy
+  оставил бы проект без автодополнения, а capabilities нужно пропатчить до
+  attach клиентов.
+
+WallRizz/ — шаблон темы для ghostty; kitty/current-theme.conf — регенерация
+WallRizz'ом.
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com

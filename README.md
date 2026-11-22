@@ -1,7 +1,7 @@
 > Sanitized mirror of Forgejo `serhii/dotfiles`. Source code is not published here.
 >
 > Commit texts: `commits/`. Need the code? Email: sergeyalpatov1@gmail.com
-> Source: Forgejo `serhii/dotfiles` | Synced: 2026-11-20T04:44:40Z
+> Source: Forgejo `serhii/dotfiles` | Synced: 2026-11-22T20:54:16Z
 
 ---
 
@@ -31,6 +31,9 @@ git -C ~/.dotfiles remote add gitea http://100.110.77.11/serhii/dotfiles.git
 cd ~/.dotfiles
 stow .
 
+# `power/` is the exception — see the note under the Targets table:
+stow --no-folding power
+
 # Or stow individual targets
 stow hypr
 stow nvim
@@ -50,8 +53,21 @@ Each top-level directory is a Stow target that symlinks into `~/.config/`:
 | `kitty/` | Kitty terminal emulator |
 | `WallRizz/` | WallRizz wallpaper & system theme manager |
 | `tlp/` | TLP power management |
+| `power/` | Idle chain (hypridle), suspend/hibernation guards, `resume=` boot entries — stow with `--no-folding` |
 | `silo/` | Silo SMB share — CLI, PAM snippet, privileged helpers, systemd units |
 | `aether/` | Aether theme templates (`~/.config/aether/custom/`, mako) |
+
+> **`power/` must be stowed with `--no-folding`.** It has to place a systemd drop-in
+> at `~/.config/systemd/user/hypridle.service.d/10-jane.conf`, and systemd ignores a
+> drop-in *directory* that is itself a symlink — with no warning in the journal, and
+> with the unit quietly running the packaged settings instead. Folded stowing (a bare
+> `stow power`, or the `stow .` above) produces exactly that symlink. `powerctl doctor`
+> checks it and says which command to run; the same class of problem is documented for
+> `aether/`, which needs real directories for a different reason.
+>
+> After the root half changes: `sudo ~/.config/power/install-root.sh` (idempotent —
+> installs `/usr/local/bin/power{ -root,-drift-check}`, the system units, the pacman
+> hook and the `resume=` boot entries). Then check with `powerctl doctor`.
 
 ## WallRizz (wallpaper & system theme manager)
 
