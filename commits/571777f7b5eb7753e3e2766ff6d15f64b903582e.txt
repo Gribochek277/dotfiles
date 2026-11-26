@@ -1,0 +1,21 @@
+repository: serhii/dotfiles
+commit: 571777f7b5eb7753e3e2766ff6d15f64b903582e
+date: 2026-11-26T20:20:48+02:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+docs(AGENTS): GitHub — санитизированная публикация, канон gitea
+origin/main расходится с локальной историей по построению: пайплайн вне
+репозитория пересоздаёт коммиты (committer sanitized-mirror, префикс [private],
+исходный SHA в сообщении), вырезает часть путей и добавляет commits/<sha>.txt.
+На 2026-11-26 это ahead 12 / behind 36, где все 36 — переписанные копии своих же
+коммитов от 2026-11-22, а git pushboth падает на non-fast-forward.
+
+Пуш теперь только в gitea; force-push в origin отменил бы санитайзинг.
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
