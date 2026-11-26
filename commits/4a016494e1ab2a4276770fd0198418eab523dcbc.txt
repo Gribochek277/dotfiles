@@ -1,0 +1,40 @@
+repository: serhii/dotfiles
+commit: 4a016494e1ab2a4276770fd0198418eab523dcbc
+date: 2026-11-26T20:17:16+02:00
+author: Serhii <36171312+Gribochek277@users.noreply.github.com>
+branches: main
+
+message:
+feat(power): уровень DPM видеокарты едет вместе с профилем TLP
+TLP 1.11 больше не управляет Radeon DPM: `tlp-stat -g` печатает power_state и
+panel_power_savings, а RADEON_DPM_PERF_LEVEL_ON_AC=auto в /etc/tlp.conf — мёртвый
+ключ. В итоге iGPU оставался на power_dpm_force_performance_level=low (жёсткие
+800 МГц) при любом профиле: тернарная 27B-модель декодировала 2.6 tok/s вместо
+6.2 (balanced) и 9.5 (performance).
+
+Теперь уровень — часть профиля: performance|balanced -> auto, power-saver -> low.
+Пишет только root: power-root gpu-sync читает ActiveProfile у tlp-pd по D-Bus
+(два одинаковых подряд — свойство публикуется асинхронно) и сам выбирает уровень;
+high недостижим by design — он не «быстрее», а выключает управление питанием и
+держит максимум частоты, и именно это вместе с platform_profile=performance
+выключило ноутбук 2026-11-26.
+
+Триггеры: power-gpu-dpm.service на загрузке (после tlp-pd), power-gpu-dpm.path на
+звонок /run/power-gpu-dpm/poke, 86-power-gpu-dpm.rules на смену AC/батареи (после
+85-tlp.rules, SYSTEMD_WANTS исполняется по завершении всего события).
+
+powerctl profile после успешной смены только стучит в звонок — пользовательская
+половина никогда не держит запись в sysfs, содержимое файла не читается, поэтому
+передать «свой» уровень через него нельзя. powerctl status/doctor печатают
+«ожидаемо -> фактически», тултип waybar — строку GPU clocks рядом с CPU EPP.
+
+Проверено на машине: performance dpm=auto, power-saver dpm=low, balanced dpm=auto;
+идемпотентность (два прогона подряд — «already auto»); декод 7.4 tok/s на balanced
+и 11.6 на performance. Не проверено: путь загрузки (юнит проверится при следующем
+ребуте).
+
+---
+Source code is NOT published on GitHub.
+My code is hosted on a private server - this repository only reflects my working activity.
+README (if any) is available in the repo root.
+If you need the code, email: sergeyalpatov1@gmail.com
